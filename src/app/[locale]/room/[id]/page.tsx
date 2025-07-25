@@ -18,6 +18,7 @@ import { Header } from "~/components/layout/header";
 import { Footer } from "~/components/layout/footer";
 import { cn } from "~/lib/utils/cn";
 import { Scoreboard } from "~/components/scoreboard";
+import { MessageAnalysisDialog } from "~/components/message-analysis-dialog";
 
 interface Message {
   user: "You" | "Friend";
@@ -181,16 +182,18 @@ export default function RoomPage({
                   msg.user === "You" ? "justify-end" : "justify-start"
                 )}
               >
-                <div
-                  className={cn(
-                    "rounded-lg px-4 py-2 max-w-xs lg:max-w-md",
-                    msg.user === "You"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted"
-                  )}
-                >
-                  <p>{msg.text}</p>
-                </div>
+                <MessageAnalysisDialog>
+                  <div
+                    className={cn(
+                      "rounded-lg px-4 py-2 max-w-xs lg:max-w-md cursor-pointer",
+                      msg.user === "You"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted"
+                    )}
+                  >
+                    <p>{msg.text}</p>
+                  </div>
+                </MessageAnalysisDialog>
               </div>
             ))}
             <div ref={messagesEndRef} />

@@ -95,5 +95,30 @@
   "ChatHistory": {
     "title": "Chat History",
     "room": "Room"
+  },
+  "MessageAnalysisDialog": {
+    "title": "Message Analysis",
+    "crossNetJudgment": {
+      "title": "Cross-Net Judgment"
+    },
+    "detailedAnalysis": {
+      "title": "Detailed Analysis",
+      "senderState": "Sender State",
+      "receiverImpact": "Receiver's Expected Impact",
+      "evidence": "Cross-Net Evidence",
+      "suggestion": "Improvement Suggestion"
+    },
+    "riskAssessment": {
+      "title": "Risk Assessment",
+      "description": "This message has a potential risk of causing communication conflict."
+    },
+    "mock": {
+      "isCrossNet": "Yes",
+      "senderState": "Expressing frustration and trying to shift blame.",
+      "receiverImpact": "May feel accused and become defensive.",
+      "evidence": "The phrase 'You always...' is a generalization and an accusation.",
+      "suggestion": "Rephrase as 'I feel frustrated when...'",
+      "risk": "High"
+    }
   }
 }

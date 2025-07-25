@@ -95,5 +95,30 @@
   "ChatHistory": {
     "title": "聊天记录",
     "room": "房间"
+  },
+  "MessageAnalysisDialog": {
+    "title": "消息分析",
+    "crossNetJudgment": {
+      "title": "【越网判断】"
+    },
+    "detailedAnalysis": {
+      "title": "【详细分析】",
+      "senderState": "发送者状态",
+      "receiverImpact": "接收者预期影响",
+      "evidence": "越网证据",
+      "suggestion": "改进建议"
+    },
+    "riskAssessment": {
+      "title": "【风险评估】",
+      "description": "此消息可能造成的沟通冲突风险"
+    },
+    "mock": {
+      "isCrossNet": "是",
+      "senderState": "表达沮丧并试图转移责任。",
+      "receiverImpact": "可能会感到被指责并采取防御姿态。",
+      "evidence": "“你总是...”这样的措辞是一种概括和指责。",
+      "suggestion": "调整为“当...时，我感到很沮丧。”",
+      "risk": "高"
+    }
   }
 }
