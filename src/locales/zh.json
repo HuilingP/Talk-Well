@@ -1,9 +1,9 @@
 {
   "HomePage": {
-    "title": "Boot Next.js",
-    "description": "现代化的Next.js启动模板，支持国际化、Tailwind CSS和TypeScript。",
-    "getStarted": "开始使用",
-    "createAccount": "创建账号"
+    "title": "好好说话",
+    "description": "一个基于“不越网”原则，旨在促进尊重沟通的网络应用。",
+    "createRoom": "创建新房间",
+    "joinRoom": "加入现有房间"
   },
   "LocaleSwitcher": {
     "label": "切换语言",
@@ -74,5 +74,26 @@
         "github": "GitHub"
       }
     }
+  },
+  "JoinRoomDialog": {
+    "joinRoomButton": "加入现有房间",
+    "title": "加入房间",
+    "description": "请输入6位房间码加入房间。",
+    "roomCodeLabel": "房间码",
+    "submitButton": "加入"
+  },
+  "RoomPage": {
+    "title": "房间",
+    "messagePlaceholder": "输入您的消息...",
+    "sendButton": "发送"
+  },
+  "Scoreboard": {
+    "player1": "玩家1",
+    "player2": "玩家2",
+    "totalScore": "总分"
+  },
+  "ChatHistory": {
+    "title": "聊天记录",
+    "room": "房间"
   }
 }

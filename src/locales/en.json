@@ -1,9 +1,9 @@
 {
   "HomePage": {
-    "title": "Boot Next.js",
-    "description": "Modern Next.js starter template with i18n support, Tailwind CSS, and TypeScript.",
-    "getStarted": "Get Started",
-    "createAccount": "Create Account"
+    "title": "Don't Cross the Net",
+    "description": "A web app for respectful communication, based on the \"Don't Cross the Net\" principle.",
+    "createRoom": "Create a New Room",
+    "joinRoom": "Join an Existing Room"
   },
   "LocaleSwitcher": {
     "label": "Change language",
@@ -74,5 +74,26 @@
         "github": "GitHub"
       }
     }
+  },
+  "JoinRoomDialog": {
+    "joinRoomButton": "Join an Existing Room",
+    "title": "Join Room",
+    "description": "Enter the 6-digit code to join the room.",
+    "roomCodeLabel": "Room Code",
+    "submitButton": "Join"
+  },
+  "RoomPage": {
+    "title": "Room",
+    "messagePlaceholder": "Type your message...",
+    "sendButton": "Send"
+  },
+  "Scoreboard": {
+    "player1": "Player 1",
+    "player2": "Player 2",
+    "totalScore": "Total Score"
+  },
+  "ChatHistory": {
+    "title": "Chat History",
+    "room": "Room"
   }
 }
