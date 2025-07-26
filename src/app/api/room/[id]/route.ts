@@ -13,27 +13,48 @@ export async function GET(
   try {
     const { id } = await params;
 
-    // Get current session (optional for room access)
+    // Get current session - required for all room operations
     const session = await auth.api.getSession({
       headers: request.headers,
     });
 
+    // Check if user is authenticated
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        {
+          error: "Authentication required",
+          message: "You must be logged in to access rooms",
+        },
+        { status: 401 },
+      );
+    }
+
     // Find the room
-    const roomData = await db.select().from(room).where(eq(room.id, id)).limit(1);
+    let roomData = await db.select().from(room).where(eq(room.id, id)).limit(1);
 
     if (roomData.length === 0) {
-      return NextResponse.json(
-        { error: "Room not found" },
-        { status: 404 },
-      );
+      // Auto-create the room if it doesn't exist (user is authenticated)
+      await db.insert(room).values({
+        id,
+        player1Score: 0,
+        player2Score: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      // Fetch the newly created room
+      roomData = await db.select().from(room).where(eq(room.id, id)).limit(1);
     }
 
     // Get room messages with their analyses
     const messagesData = await db
       .select({
         id: message.id,
+        roomId: message.roomId,
+        userId: message.userId,
+        username: message.username,
         userType: message.userType,
-        text: message.text,
+        content: message.content,
         createdAt: message.createdAt,
         analysis: {
           id: messageAnalysis.id,
@@ -52,8 +73,23 @@ export async function GET(
 
     // Transform messages to match expected format
     const messages = messagesData.map(msg => ({
-      user: msg.userType as "You" | "Friend",
-      text: msg.text,
+      id: msg.id,
+      roomId: msg.roomId,
+      userId: msg.userId,
+      username: msg.username,
+      content: msg.content,
+      userType: msg.userType as "You" | "Friend",
+      createdAt: msg.createdAt.toISOString(),
+      analysis: (msg.analysis && msg.analysis.id)
+        ? {
+            isCrossNet: msg.analysis.isCrossNet,
+            senderState: msg.analysis.senderState,
+            receiverImpact: msg.analysis.receiverImpact,
+            evidence: msg.analysis.evidence,
+            suggestion: msg.analysis.suggestion,
+            risk: msg.analysis.risk,
+          }
+        : undefined,
     }));
 
     // If room is empty, add default messages like frontend does
@@ -70,26 +106,43 @@ export async function GET(
           id: `default_${Date.now()}_${Math.random()}`,
           roomId: id,
           userId: msg.user === "You" ? session?.user?.id || null : null,
+          username: msg.user === "You" ? session?.user?.name || "Anonymous" : "Friend",
           userType: msg.user,
-          text: msg.text,
+          content: msg.text,
         });
       }
 
+      // Transform default messages to match format
+      const transformedDefaultMessages = defaultMessages.map((msg, index) => ({
+        id: `default_${Date.now()}_${index}`,
+        roomId: id,
+        userId: msg.user === "You" ? session?.user?.id || null : null,
+        username: msg.user === "You" ? session?.user?.name || "Anonymous" : "Friend",
+        content: msg.text,
+        userType: msg.user,
+        createdAt: new Date().toISOString(),
+      }));
+
       return NextResponse.json({
-        id,
-        messages: defaultMessages,
-        player1Score: roomData[0].player1Score,
-        player2Score: roomData[0].player2Score,
-        timestamp: Math.floor(roomData[0].createdAt.getTime() / 1000),
+        room: {
+          id,
+          player1Score: roomData[0].player1Score,
+          player2Score: roomData[0].player2Score,
+          createdAt: roomData[0].createdAt.toISOString(),
+        },
+        messages: transformedDefaultMessages,
       });
     }
 
     return NextResponse.json({
-      id,
+      room: {
+        id,
+        player1Score: roomData[0].player1Score,
+        player2Score: roomData[0].player2Score,
+        createdAt: roomData[0].createdAt.toISOString(),
+        updatedAt: roomData[0].updatedAt.toISOString(),
+      },
       messages,
-      player1Score: roomData[0].player1Score,
-      player2Score: roomData[0].player2Score,
-      timestamp: Math.floor(roomData[0].updatedAt.getTime() / 1000),
     });
   } catch (error) {
     console.error("Error fetching room:", error);

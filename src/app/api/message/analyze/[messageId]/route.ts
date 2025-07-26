@@ -17,7 +17,7 @@ export async function GET(
       .select({
         message: {
           id: message.id,
-          text: message.text,
+          content: message.content,
           userType: message.userType,
           createdAt: message.createdAt,
         },
@@ -46,20 +46,29 @@ export async function GET(
 
     const messageData = result[0];
 
-    if (!messageData.analysis.id) {
-      return NextResponse.json(
-        { error: "Analysis not found for this message" },
-        { status: 404 },
-      );
+    if (!messageData.analysis || !messageData.analysis.id) {
+      // Return default analysis for messages without analysis (like default messages)
+      return NextResponse.json({
+        analysis: {
+          isCrossNet: "No",
+          senderState: "Neutral",
+          receiverImpact: "Neutral",
+          evidence: "This message doesn't have detailed analysis available.",
+          suggestion: "Continue the conversation naturally.",
+          risk: "Low",
+        },
+      });
     }
 
     return NextResponse.json({
-      isCrossNet: messageData.analysis.isCrossNet,
-      senderState: messageData.analysis.senderState,
-      receiverImpact: messageData.analysis.receiverImpact,
-      evidence: messageData.analysis.evidence,
-      suggestion: messageData.analysis.suggestion,
-      risk: messageData.analysis.risk,
+      analysis: {
+        isCrossNet: messageData.analysis.isCrossNet,
+        senderState: messageData.analysis.senderState,
+        receiverImpact: messageData.analysis.receiverImpact,
+        evidence: messageData.analysis.evidence,
+        suggestion: messageData.analysis.suggestion,
+        risk: messageData.analysis.risk,
+      },
     });
   } catch (error) {
     console.error("Error fetching message analysis:", error);

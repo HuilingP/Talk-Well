@@ -12,6 +12,8 @@ const nextConfig = {
       },
     ],
   },
+  // Allow external host requests for Clacky environment
+  allowedDevOrigins: ["*.clackypaas.com", "localhost", "127.0.0.1"],
 };
 
 // Wrap the config with the next-intl plugin

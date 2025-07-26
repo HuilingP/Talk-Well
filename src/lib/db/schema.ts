@@ -82,8 +82,9 @@ export const message = pgTable("message", {
   id: text("id").primaryKey(),
   roomId: text("room_id").notNull().references(() => room.id, { onDelete: "cascade" }),
   userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
+  username: text("username").notNull(),
   userType: text("user_type").notNull(), // "You" or "Friend"
-  text: text("text").notNull(),
+  content: text("content").notNull(),
   analysisId: text("analysis_id"),
   createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
 });

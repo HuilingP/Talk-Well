@@ -85,7 +85,10 @@
   "RoomPage": {
     "title": "房间",
     "messagePlaceholder": "输入您的消息...",
-    "sendButton": "发送"
+    "sendButton": "发送",
+    "authRequired": "需要身份验证",
+    "signIn": "登录",
+    "signUp": "注册"
   },
   "Scoreboard": {
     "player1": "玩家1",
