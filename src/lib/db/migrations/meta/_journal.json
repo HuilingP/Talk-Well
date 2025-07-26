@@ -15,6 +15,20 @@
       "when": 1750439970956,
       "tag": "0001_sudden_jackal",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1753513508953,
+      "tag": "0002_clammy_payback",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1753515751605,
+      "tag": "0003_mysterious_tarot",
+      "breakpoints": true
     }
   ]
 }

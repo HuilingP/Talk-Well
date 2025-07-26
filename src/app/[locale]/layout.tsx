@@ -55,7 +55,7 @@ export default async function RootLayout({
   return (
     // suppressHydrationWarning用于防止主题切换时服务端和客户端渲染不匹配导致的水合错误
     <html lang={locale} suppressHydrationWarning>
-      <body className={cn(inter.className, "antialiased")}>
+      <body className={cn(inter.className, "antialiased")} suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

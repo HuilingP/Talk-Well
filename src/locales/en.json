@@ -85,7 +85,10 @@
   "RoomPage": {
     "title": "Room",
     "messagePlaceholder": "Type your message...",
-    "sendButton": "Send"
+    "sendButton": "Send",
+    "authRequired": "Authentication Required",
+    "signIn": "Sign In",
+    "signUp": "Sign Up"
   },
   "Scoreboard": {
     "player1": "Player 1",
