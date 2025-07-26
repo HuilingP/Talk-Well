@@ -10,6 +10,7 @@ interface ScoreboardProps {
   roomCreatedById?: string | null;
   player1Name?: string;
   player2Name?: string;
+  currentUsername?: string;
 }
 
 export function Scoreboard({
@@ -19,22 +20,36 @@ export function Scoreboard({
   roomCreatedById,
   player1Name,
   player2Name,
+  currentUsername,
 }: ScoreboardProps) {
   const t = useTranslations("Scoreboard");
 
   // Determine if current user is player1 (room creator) or player2
   const isCurrentUserPlayer1 = currentUserId === roomCreatedById;
 
-  // Determine display names and positions
-  const leftPlayerName = isCurrentUserPlayer1 ? (player2Name || "对方") : (player1Name || "对方");
-  const rightPlayerName = "我";
+  // Get opponent's name - if current user is player1, opponent is player2 and vice versa
+  let opponentName = "对方";
+  if (isCurrentUserPlayer1) {
+    // Current user is player1, so opponent is player2
+    opponentName = player2Name || "对方";
+  } else {
+    // Current user is player2, so opponent is player1
+    opponentName = player1Name || "对方";
+  }
+
+  // Current user's name - prefer showing username if available
+  const currentUserDisplayName = currentUsername || "我";
+
+  // Determine display names and positions - left is opponent, right is current user
+  const leftPlayerName = opponentName;
+  const rightPlayerName = currentUserDisplayName;
   const leftPlayerScore = isCurrentUserPlayer1 ? player2Score : player1Score;
   const rightPlayerScore = isCurrentUserPlayer1 ? player1Score : player2Score;
   const totalScore = player1Score + player2Score;
 
   const getBadges = (score: number) => {
     const badgeCount = Math.max(0, Math.floor(score / 10));
-    return Array.from({ length: badgeCount }, () => null);
+    return Array.from({ length: badgeCount }, (_, index) => `badge-${score}-${index}`);
   };
 
   return (
@@ -57,8 +72,8 @@ export function Scoreboard({
         <h3 className="text-lg font-semibold">{t("totalScore")}</h3>
         <p className="text-3xl font-bold">{totalScore}</p>
         <div className="flex justify-center mt-2">
-          {getBadges(totalScore).map((_, i) => (
-            <Medal key={`badge-${i}`} className="h-6 w-6 text-yellow-500" />
+          {getBadges(totalScore).map(badgeKey => (
+            <Medal key={badgeKey} className="h-6 w-6 text-yellow-500" />
           ))}
         </div>
       </div>

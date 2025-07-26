@@ -69,6 +69,7 @@ export default function RoomPage({
 
   // 用户认证状态
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUsername, setCurrentUsername] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
@@ -137,6 +138,8 @@ export default function RoomPage({
         const session = await response.json();
         if (session?.user?.id) {
           setCurrentUserId(session.user.id);
+          // 从用户信息中获取用户名
+          setCurrentUsername(session.user.name || session.user.email || null);
           setIsAuthenticated(true);
           return session.user.id;
         }
@@ -699,6 +702,7 @@ export default function RoomPage({
             roomCreatedById={roomCreatedById}
             player1Name={playerNames.player1}
             player2Name={playerNames.player2}
+            currentUsername={currentUsername}
           />
 
           <CardContent className="flex-grow space-y-4 h-96 overflow-y-auto p-6">
