@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 import { LanguageSwitcher } from "~/components/language-switcher";
 import { ModeToggle } from "~/components/theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -26,10 +27,15 @@ export function Header({ className }: HeaderProps) {
   const t = useTranslations("Header");
   const pathname = usePathname();
   const { data: session, isPending } = authClient.useSession();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const navItems = [
     { href: "/", label: t("home") },
-    { href: "/pricing", label: t("pricing") },
+    // { href: "/pricing", label: t("pricing") }, // Temporarily commented out
     ...(session?.user ? [{ href: "/dashboard", label: "Dashboard" }] : []),
   ];
 
@@ -59,25 +65,28 @@ export function Header({ className }: HeaderProps) {
                 <div className="absolute inset-0 rounded-md bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 blur-sm -z-10" />
               </div>
               <span className="font-bold text-xl bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
-                Boot Next.js
+                好好说话
               </span>
             </Link>
           </div>
 
           {/* Navigation Links - Desktop */}
           <nav className="hidden md:flex items-center space-x-6">
-            {navItems.map(item => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  pathname === item.href || (item.href === "/" && pathname === "/") ? "text-primary" : "text-muted-foreground",
-                )}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map(item => {
+              const isActive = mounted && (pathname === item.href || (item.href === "/" && pathname === "/"));
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "text-sm font-medium transition-colors hover:text-primary",
+                    isActive ? "text-primary" : "text-muted-foreground",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Right side items */}

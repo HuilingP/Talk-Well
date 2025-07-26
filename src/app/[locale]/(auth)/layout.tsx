@@ -34,7 +34,7 @@ export default async function AuthLayout({
                   className="rounded-md"
                 />
                 <h1 className="text-2xl font-bold animate-in-out-in duration-1000">
-                  Boot Next.js
+                  好好说话
                 </h1>
               </Link>
               <p className="mt-2 text-muted-foreground max-w-md">

@@ -17,7 +17,7 @@ export async function generateMetadata({
   const { locale } = await params;
 
   return {
-    title: "Pricing - Boot Next.js App",
+    title: "Pricing - 好好说话",
     description: "Support our open source work with a donation",
     metadataBase: new URL(getBaseUrl()),
     alternates: createAlternates("/pricing", locale),
@@ -56,7 +56,7 @@ export default function PricingPage({
             </h1>
 
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Boot Next.js is completely free and open source. Your donations help us maintain and improve the project.
+              好好说话 is completely free and open source. Your donations help us maintain and improve the project.
             </p>
           </div>
 

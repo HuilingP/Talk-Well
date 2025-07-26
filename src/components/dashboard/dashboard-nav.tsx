@@ -57,7 +57,7 @@ export function DashboardNav() {
               className="rounded-md transition-transform duration-200"
             />
           </div>
-          <span className="font-medium">Boot Next.js</span>
+          <span className="font-medium">好好说话</span>
         </Link>
       </div>
 
