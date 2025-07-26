@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "~/components/language-switcher";
 import { ModeToggle } from "~/components/theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -72,7 +72,7 @@ export function Header({ className }: HeaderProps) {
 
           {/* Navigation Links - Desktop */}
           <nav className="hidden md:flex items-center space-x-6">
-            {navItems.map(item => {
+            {navItems.map((item) => {
               const isActive = mounted && (pathname === item.href || (item.href === "/" && pathname === "/"));
               return (
                 <Link

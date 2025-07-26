@@ -42,39 +42,9 @@ export async function GET(
         connections.set(roomId, new Set());
       }
 
-      const writer = {
-        write: (data: string) => {
-          if (!abortController.signal.aborted) {
-            try {
-              controller.enqueue(encoder.encode(data));
-            } catch (error) {
-              console.error("SSE write error:", error.message);
-              // Connection is closed, clean up
-              cleanup();
-            }
-          }
-        },
-        close: () => {
-          try {
-            controller.close();
-          } catch (error) {
-            // Controller might already be closed
-          }
-        },
-      };
-
-      connections.get(roomId)!.add({ writer, controller: abortController });
-
-      // Send initial connection message
-      writer.write("data: {\"type\": \"connected\"}\n\n");
-
-      // Send any missed messages if lastMessageId is provided
-      if (lastMessageId) {
-        sendMissedMessages(roomId, Number.parseInt(lastMessageId), writer);
-      }
-
+      // Define cleanup function first
+      let writer: any;
       const cleanup = () => {
-        writer.close();
         const roomConnections = connections.get(roomId);
         if (roomConnections) {
           roomConnections.forEach((conn) => {
@@ -88,10 +58,39 @@ export async function GET(
           }
         }
         abortController.abort();
+        try {
+          controller.close();
+        } catch {
+          // Controller might already be closed
+        }
       };
 
+      writer = {
+        write: (data: string) => {
+          if (!abortController.signal.aborted) {
+            try {
+              controller.enqueue(encoder.encode(data));
+            } catch (writeError) {
+              console.error("SSE write error:", writeError);
+              // Connection is closed, clean up
+              cleanup();
+            }
+          }
+        },
+        close: cleanup,
+      };
+
+      connections.get(roomId)!.add({ writer, controller: abortController });
+
+      // Send initial connection message
+      writer.write("data: {\"type\": \"connected\"}\n\n");
       // Handle client disconnect
       abortController.signal.addEventListener("abort", cleanup);
+
+      // Send any missed messages if lastMessageId is provided
+      if (lastMessageId) {
+        sendMissedMessages(roomId, Number.parseInt(lastMessageId), writer);
+      }
 
       // Cleanup on stream close
       return cleanup;

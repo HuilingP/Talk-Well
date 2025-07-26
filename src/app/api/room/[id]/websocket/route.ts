@@ -20,7 +20,7 @@ export function broadcastToWebSocketRoom(roomId: string, data: any) {
   }
 
   const message = `data: ${JSON.stringify(data)}\n\n`;
-  console.log(`Broadcasting to room ${roomId}:`, data);
+  console.warn(`Broadcasting to room ${roomId}:`, data);
 
   // 将连接转换为数组以安全地迭代
   const connectionsArray = Array.from(connections);
@@ -61,7 +61,7 @@ export async function GET(
   }
 
   const userId = session.user.id;
-  console.log(`WebSocket-style connection: User ${userId} joining room ${roomId}`);
+  console.warn(`WebSocket-style connection: User ${userId} joining room ${roomId}`);
 
   // 创建流式响应
   const stream = new ReadableStream({
@@ -87,7 +87,7 @@ export async function GET(
 
         try {
           controller.close();
-        } catch (e) {
+        } catch {
           // Controller might already be closed
         }
       };
@@ -122,8 +122,8 @@ export async function GET(
             timestamp: Date.now(),
           })}\n\n`;
           controller.enqueue(new TextEncoder().encode(heartbeat));
-        } catch (error) {
-          console.log("Heartbeat failed, cleaning up connection");
+        } catch {
+          console.warn("Heartbeat failed, cleaning up connection");
           clearInterval(heartbeatInterval);
           cleanup();
         }

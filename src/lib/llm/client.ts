@@ -146,15 +146,15 @@ const SYSTEM_PROMPT = `你是一个专门基于人际关系网球场理论进行
 }`;
 
 export async function analyzeMessageWithLLM(request: MessageAnalysisRequest): Promise<MessageAnalysisResponse> {
-  console.warn('[LLM] Starting message analysis...');
-  console.warn('[LLM] OpenAI configured:', !!openai);
-  console.warn('[LLM] API Key present:', !!env.OPENAI_API_KEY);
-  console.warn('[LLM] Model:', env.OPENAI_MODEL);
-  console.warn('[LLM] Base URL:', env.OPENAI_BASE_URL);
-  console.warn('[LLM] Message to analyze:', request.latestMessage.content);
+  console.warn("[LLM] Starting message analysis...");
+  console.warn("[LLM] OpenAI configured:", !!openai);
+  console.warn("[LLM] API Key present:", !!env.OPENAI_API_KEY);
+  console.warn("[LLM] Model:", env.OPENAI_MODEL);
+  console.warn("[LLM] Base URL:", env.OPENAI_BASE_URL);
+  console.warn("[LLM] Message to analyze:", request.latestMessage.content);
 
   if (!openai) {
-    console.warn('[LLM] OpenAI not configured, using fallback analysis');
+    console.warn("[LLM] OpenAI not configured, using fallback analysis");
     return fallbackAnalysis(request.latestMessage.content);
   }
 
@@ -174,8 +174,6 @@ ${conversationContext}
 
 请分析最新消息是否越网：`;
 
-
-
     const response = await openai.chat.completions.create({
       model: env.OPENAI_MODEL,
       messages: [
@@ -191,8 +189,6 @@ ${conversationContext}
       temperature: 0.1, // Low temperature for consistent analysis
       max_tokens: 1000,
     });
-
-
 
     const content = response.choices[0]?.message?.content;
     if (!content) {

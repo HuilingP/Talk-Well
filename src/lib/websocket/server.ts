@@ -1,5 +1,5 @@
 import type { IncomingMessage } from "node:http";
-import { parse } from "node:url";
+import { URL } from "node:url";
 import WebSocket from "ws";
 import { auth } from "~/lib/auth/server";
 
@@ -20,7 +20,7 @@ export function broadcastToRoom(roomId: string, message: any) {
   }
 
   const messageStr = JSON.stringify(message);
-  console.log(`Broadcasting to room ${roomId}:`, message);
+  console.warn(`Broadcasting to room ${roomId}:`, message);
 
   connections.forEach((conn) => {
     if (conn.ws.readyState === WebSocket.OPEN) {
@@ -45,8 +45,13 @@ export function broadcastToRoom(roomId: string, message: any) {
 
 // 处理WebSocket连接
 export async function handleWebSocketConnection(ws: WebSocket, request: IncomingMessage) {
-  const { pathname, query } = parse(request.url || "", true);
-  const roomId = query.roomId as string;
+  let roomId: string | undefined;
+  try {
+    const url = new URL(request.url || "", `http://${request.headers.host || "localhost"}`);
+    roomId = url.searchParams.get("roomId") || undefined;
+  } catch {
+    roomId = undefined;
+  }
 
   if (!roomId) {
     ws.close(1000, "Room ID required");
@@ -65,7 +70,7 @@ export async function handleWebSocketConnection(ws: WebSocket, request: Incoming
     }
 
     const userId = session.user.id;
-    console.log(`WebSocket connected: User ${userId} joined room ${roomId}`);
+    console.warn(`WebSocket connected: User ${userId} joined room ${roomId}`);
 
     // 创建连接对象
     const connection: RoomConnection = {
@@ -101,7 +106,7 @@ export async function handleWebSocketConnection(ws: WebSocket, request: Incoming
     ws.on("message", async (data) => {
       try {
         const message = JSON.parse(data.toString());
-        console.log("WebSocket message received:", message);
+        console.warn("WebSocket message received:", message);
 
         // 这里可以处理不同类型的消息
         switch (message.type) {
@@ -112,7 +117,7 @@ export async function handleWebSocketConnection(ws: WebSocket, request: Incoming
             // 房间加入逻辑（如果需要的话）
             break;
           default:
-            console.log("Unknown message type:", message.type);
+            console.warn("Unknown message type:", message.type);
         }
       } catch (error) {
         console.error("Error processing WebSocket message:", error);
@@ -121,7 +126,7 @@ export async function handleWebSocketConnection(ws: WebSocket, request: Incoming
 
     // 处理连接关闭
     ws.on("close", (code, reason) => {
-      console.log(`WebSocket disconnected: User ${userId} left room ${roomId}, code: ${code}, reason: ${reason}`);
+      console.warn(`WebSocket disconnected: User ${userId} left room ${roomId}, code: ${code}, reason: ${reason}`);
 
       // 清理心跳
       clearInterval(heartbeatInterval);
