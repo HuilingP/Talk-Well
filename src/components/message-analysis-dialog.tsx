@@ -46,8 +46,12 @@ export function MessageAnalysisDialog({ children, messageId }: MessageAnalysisDi
         if (response.ok) {
           const data = await response.json();
           setAnalysis(data.analysis);
+        } else if (response.status === 404) {
+          // Message not found, use mock data
+          console.warn(`Message ${messageId} not found in database, using mock analysis`);
+          setAnalysis(null); // Will trigger mock data display
         } else {
-          throw new Error("Failed to fetch analysis");
+          throw new Error(`HTTP ${response.status}: Failed to fetch analysis`);
         }
       } catch (err) {
         console.error("Error fetching message analysis:", err);
@@ -82,110 +86,131 @@ export function MessageAnalysisDialog({ children, messageId }: MessageAnalysisDi
         <div className="grid gap-4 py-4">
           {isLoading
             ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                  <span className="ml-2">Loading analysis...</span>
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+                  <span className="text-lg font-medium text-gray-600">正在分析消息...</span>
+                  <span className="text-sm text-gray-500 mt-2">请稍候，AI正在处理中</span>
                 </div>
               )
-            : error
-              ? (
-                  <div className="text-center py-8 text-red-500">
-                    <p>{error}</p>
-                    <p className="text-sm text-gray-500 mt-2">Showing mock data instead</p>
+            : (
+                <>
+                  {error
+                    ? (
+                        <div className="text-center py-8 text-red-500">
+                          <p>{error}</p>
+                          <p className="text-sm text-gray-500 mt-2">Showing mock data instead</p>
+                        </div>
+                      )
+                    : (
+                        <div className="text-sm text-green-600 mb-2">
+                          {analysis ? "✓ 实时分析结果" : "模拟分析数据"}
+                        </div>
+                      )}
+
+                  <div>
+                    <h4 className="font-semibold">{t("crossNetJudgment.title")}</h4>
+                    <p className={`${
+                      (displayAnalysis.isCrossNet === "No" || displayAnalysis.isCrossNet === "否")
+                        ? "text-green-600"
+                        : "text-red-600"
+                    } font-medium`}
+                    >
+                      {displayAnalysis.isCrossNet === "否"
+                        ? "❌ 否 (No Cross-net)"
+                        : displayAnalysis.isCrossNet === "是"
+                          ? "⚠️ 是 (Cross-net Detected)"
+                          : displayAnalysis.isCrossNet}
+                    </p>
                   </div>
-                )
-              : (
-                  <div className="text-sm text-green-600 mb-2">
-                    {analysis ? "✓ Real-time analysis" : "Mock analysis data"}
+
+                  <div>
+                    <h4 className="font-semibold">{t("detailedAnalysis.title")}</h4>
+                    <ul className="list-disc pl-5 space-y-2 mt-2">
+                      <li>
+                        <strong>
+                          {t("detailedAnalysis.senderState")}
+                          :
+                        </strong>
+                        {" "}
+                        <span className={`${
+                          displayAnalysis.senderState.toLowerCase().includes("positive")
+                            ? "text-green-600"
+                            : displayAnalysis.senderState.toLowerCase().includes("negative")
+                              ? "text-red-600"
+                              : "text-gray-600"
+                        }`}
+                        >
+                          {displayAnalysis.senderState}
+                        </span>
+                      </li>
+                      <li>
+                        <strong>
+                          {t("detailedAnalysis.receiverImpact")}
+                          :
+                        </strong>
+                        {" "}
+                        <span className={`${
+                          displayAnalysis.receiverImpact.toLowerCase().includes("positive")
+                            ? "text-green-600"
+                            : displayAnalysis.receiverImpact.toLowerCase().includes("negative")
+                              ? "text-red-600"
+                              : "text-gray-600"
+                        }`}
+                        >
+                          {displayAnalysis.receiverImpact}
+                        </span>
+                      </li>
+                      <li>
+                        <strong>
+                          {t("detailedAnalysis.evidence")}
+                          :
+                        </strong>
+                        {" "}
+                        <span className="text-gray-700">
+                          {displayAnalysis.evidence}
+                        </span>
+                      </li>
+                      <li>
+                        <strong>
+                          {t("detailedAnalysis.suggestion")}
+                          :
+                        </strong>
+                        {" "}
+                        <span className="text-blue-600">
+                          {displayAnalysis.suggestion}
+                        </span>
+                      </li>
+                    </ul>
                   </div>
-                )}
 
-          <div>
-            <h4 className="font-semibold">{t("crossNetJudgment.title")}</h4>
-            <p className={`${displayAnalysis.isCrossNet === "Yes" ? "text-green-600" : "text-red-600"} font-medium`}>
-              {displayAnalysis.isCrossNet}
-            </p>
-          </div>
-
-          <div>
-            <h4 className="font-semibold">{t("detailedAnalysis.title")}</h4>
-            <ul className="list-disc pl-5 space-y-2 mt-2">
-              <li>
-                <strong>
-                  {t("detailedAnalysis.senderState")}
-                  :
-                </strong>
-                {" "}
-                <span className={`${
-                  displayAnalysis.senderState.toLowerCase().includes("positive")
-                    ? "text-green-600"
-                    : displayAnalysis.senderState.toLowerCase().includes("negative")
-                      ? "text-red-600"
-                      : "text-gray-600"
-                }`}
-                >
-                  {displayAnalysis.senderState}
-                </span>
-              </li>
-              <li>
-                <strong>
-                  {t("detailedAnalysis.receiverImpact")}
-                  :
-                </strong>
-                {" "}
-                <span className={`${
-                  displayAnalysis.receiverImpact.toLowerCase().includes("positive")
-                    ? "text-green-600"
-                    : displayAnalysis.receiverImpact.toLowerCase().includes("negative")
-                      ? "text-red-600"
-                      : "text-gray-600"
-                }`}
-                >
-                  {displayAnalysis.receiverImpact}
-                </span>
-              </li>
-              <li>
-                <strong>
-                  {t("detailedAnalysis.evidence")}
-                  :
-                </strong>
-                {" "}
-                <span className="text-gray-700">
-                  {displayAnalysis.evidence}
-                </span>
-              </li>
-              <li>
-                <strong>
-                  {t("detailedAnalysis.suggestion")}
-                  :
-                </strong>
-                {" "}
-                <span className="text-blue-600">
-                  {displayAnalysis.suggestion}
-                </span>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-semibold">{t("riskAssessment.title")}</h4>
-            <p>
-              <span className={`font-bold ${
-                displayAnalysis.risk === "Low"
-                  ? "text-green-600"
-                  : displayAnalysis.risk === "High"
-                    ? "text-red-600"
-                    : "text-yellow-600"
-              }`}
-              >
-                {displayAnalysis.risk}
-              </span>
-              {" "}
-              -
-              {" "}
-              {t("riskAssessment.description")}
-            </p>
-          </div>
+                  <div>
+                    <h4 className="font-semibold">{t("riskAssessment.title")}</h4>
+                    <p>
+                      <span className={`font-bold px-2 py-1 rounded ${
+                        (displayAnalysis.risk === "Low" || displayAnalysis.risk === "低")
+                          ? "text-green-600 bg-green-50"
+                          : (displayAnalysis.risk === "High" || displayAnalysis.risk === "高")
+                              ? "text-red-600 bg-red-50"
+                              : "text-yellow-600 bg-yellow-50"
+                      }`}
+                      >
+                        {displayAnalysis.risk === "低"
+                          ? "🟢 低 (Low Risk)"
+                          : displayAnalysis.risk === "中"
+                            ? "🟡 中 (Medium Risk)"
+                            : displayAnalysis.risk === "高"
+                              ? "🔴 高 (High Risk)"
+                              : displayAnalysis.risk}
+                      </span>
+                      <span className="text-gray-600 ml-2">
+                        -
+                        {" "}
+                        {t("riskAssessment.description")}
+                      </span>
+                    </p>
+                  </div>
+                </>
+              )}
         </div>
       </DialogContent>
     </Dialog>

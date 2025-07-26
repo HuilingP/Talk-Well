@@ -6,70 +6,37 @@ import { NextResponse } from "next/server";
 import { auth } from "~/lib/auth/server";
 import { db } from "~/lib/db";
 import { message, messageAnalysis, room } from "~/lib/db/schema";
+import { analyzeMessageWithLLM } from "~/lib/llm/client";
 
+// Get conversation history for context
+async function getConversationHistory(roomId: string, limit: number = 10) {
+  const recentMessages = await db
+    .select({
+      username: message.username,
+      content: message.content,
+      createdAt: message.createdAt,
+    })
+    .from(message)
+    .where(eq(message.roomId, roomId))
+    .orderBy(message.createdAt)
+    .limit(limit);
 
-// Message analysis logic
-function analyzeMessage(text: string) {
-  // Simple analysis logic - in real implementation, this would use AI/NLP
-  const lowercaseText = text.toLowerCase();
-
-  // Determine if message crosses the "net" (is positive/negative)
-  const positiveWords = ["good", "great", "thanks", "awesome", "nice", "cool", "happy", "love"];
-  const negativeWords = ["bad", "hate", "awful", "terrible", "suck", "stupid", "angry", "annoyed"];
-
-  const hasPositive = positiveWords.some(word => lowercaseText.includes(word));
-  const hasNegative = negativeWords.some(word => lowercaseText.includes(word));
-
-  let isCrossNet = "No";
-  let senderState = "Neutral";
-  let receiverImpact = "Neutral";
-  let evidence = "The message appears neutral.";
-  let suggestion = "Continue the conversation naturally.";
-  let risk = "Medium";
-
-  if (hasPositive && !hasNegative) {
-    isCrossNet = "Yes";
-    senderState = "Positive";
-    receiverImpact = "Positive";
-    evidence = "The message contains positive language and sentiment.";
-    suggestion = "Great communication! Keep up the positive tone.";
-    risk = "Low";
-  } else if (hasNegative && !hasPositive) {
-    isCrossNet = "No";
-    senderState = "Negative";
-    receiverImpact = "Negative";
-    evidence = "The message contains negative language that might be concerning.";
-    suggestion = "Consider rephrasing with more positive language.";
-    risk = "High";
-  } else if (text.includes("?")) {
-    isCrossNet = "Yes";
-    senderState = "Curious";
-    receiverImpact = "Engaging";
-    evidence = "The message asks a question, encouraging interaction.";
-    suggestion = "Questions are great for maintaining conversation flow.";
-    risk = "Low";
-  }
-
-  return {
-    isCrossNet,
-    senderState,
-    receiverImpact,
-    evidence,
-    suggestion,
-    risk,
-  };
+  return recentMessages.map(msg => ({
+    sender: msg.username,
+    message: msg.content,
+    timestamp: msg.createdAt.toISOString(),
+  }));
 }
 
 function calculateScoreChange(analysis: any): number {
   // Tennis-style scoring logic
-  if (analysis.isCrossNet === "Yes" && analysis.risk === "Low") {
-    return 15; // Good shot over the net
-  } else if (analysis.isCrossNet === "Yes" && analysis.risk === "Medium") {
-    return 10; // Decent shot
-  } else if (analysis.isCrossNet === "No" || analysis.risk === "High") {
-    return -5; // Shot into the net or fault
+  // 越网时扣分（球过网了，对手得分），没越网时加分（球撞网，自己得分）
+  if (analysis.isCrossNet === "是") {
+    return -1; // 消息越网，扣一分
+  } else if (analysis.isCrossNet === "否") {
+    return 1; // 消息没有越网，加一分
   }
-  return 0;
+  return 0; // 其他情况不变分数
 }
 
 export async function POST(
@@ -123,7 +90,9 @@ export async function POST(
     const currentUsername = session.user.name || session.user.email || "User";
     const userIdentifier = currentUserId; // Use actual user ID for frontend identification
 
-    let analysis; let analysisId = null; let scoreChange = 0;
+    let analysis;
+    let analysisId = null;
+    let scoreChange = 0;
 
     // Always create the message first
     await db.insert(message).values({
@@ -137,8 +106,20 @@ export async function POST(
     });
 
     try {
-      // Try to analyze the message
-      analysis = analyzeMessage(text);
+      // Get conversation history for context
+      const conversationHistory = await getConversationHistory(roomId, 10);
+
+      // Try to analyze the message with LLM
+      analysis = await analyzeMessageWithLLM({
+        conversationHistory,
+        latestMessage: {
+          sender: currentUsername,
+          receiver: "对方", // Generic receiver since we don't track specific users
+          content: text.trim(),
+        },
+        relationshipContext: "聊天室对话",
+      });
+
       analysisId = nanoid();
       scoreChange = calculateScoreChange(analysis);
 
@@ -146,7 +127,12 @@ export async function POST(
       await db.insert(messageAnalysis).values({
         id: analysisId,
         messageId,
-        ...analysis,
+        isCrossNet: analysis.isCrossNet,
+        senderState: analysis.senderState,
+        receiverImpact: analysis.receiverImpact,
+        evidence: analysis.evidence,
+        suggestion: analysis.suggestion,
+        risk: analysis.risk,
       });
 
       // Update message with analysis ID
@@ -161,95 +147,29 @@ export async function POST(
     // Update room score only if analysis succeeded
     const currentRoom = roomData[0];
     let newPlayer1Score = currentRoom.player1Score;
+    let newPlayer2Score = currentRoom.player2Score;
 
     if (scoreChange !== 0) {
-      newPlayer1Score = Math.max(0, currentRoom.player1Score + scoreChange);
+      // Determine if current user is player1 (room creator) or player2
+      const isPlayer1 = currentUserId === currentRoom.createdById;
+      if (isPlayer1) {
+        // Current user is room creator (Player 1)
+        newPlayer1Score = Math.max(0, currentRoom.player1Score + scoreChange);
+      } else {
+        // Current user is not room creator (Player 2)
+        newPlayer2Score = Math.max(0, currentRoom.player2Score + scoreChange);
+      }
       await db.update(room)
         .set({
           player1Score: newPlayer1Score,
+          player2Score: newPlayer2Score,
           updatedAt: new Date(),
         })
         .where(eq(room.id, roomId));
     }
 
     // Messages are now retrieved via polling, no need for WebSocket broadcast
-
-    // Simulate friend's response after a delay (this would be real-time in production)
-    setTimeout(async () => {
-      const friendResponses = [
-        "That's interesting!",
-        "I see what you mean.",
-        "Tell me more about that.",
-        "That's cool!",
-        "I understand.",
-        "What do you think about this?",
-      ];
-
-      const friendText = friendResponses[Math.floor(Math.random() * friendResponses.length)];
-      const friendMessageId = nanoid();
-      const friendUserId = null; // null to avoid foreign key constraint
-      const friendUserIdentifier = `ai_friend_${roomId}`; // Consistent friend ID per room for frontend
-      const friendUsername = "AI Friend";
-
-      let friendAnalysis; let friendAnalysisId = null; let friendScoreChange = 0;
-
-      try {
-        // Try to analyze friend's message
-        friendAnalysis = analyzeMessage(friendText);
-        friendAnalysisId = nanoid();
-        friendScoreChange = calculateScoreChange(friendAnalysis);
-
-        // Create friend's message analysis
-        await db.insert(messageAnalysis).values({
-          id: friendAnalysisId,
-          messageId: friendMessageId,
-          ...friendAnalysis,
-        });
-      } catch (friendAnalysisError) {
-        console.error("Friend message analysis failed:", friendAnalysisError);
-      }
-
-      try {
-        // Always create friend's message first
-        await db.insert(message).values({
-          id: friendMessageId,
-          roomId,
-          userId: friendUserId, // null to avoid foreign key constraint
-          username: friendUsername,
-          userType: friendUserIdentifier, // Use identifier for frontend identification
-          content: friendText,
-          analysisId: null, // Will be updated if analysis succeeds
-        });
-
-        // Update message with analysis ID if analysis succeeded
-        if (friendAnalysisId) {
-          await db.update(message)
-            .set({ analysisId: friendAnalysisId })
-            .where(eq(message.id, friendMessageId));
-        }
-
-        // Update friend's score (player2) only if analysis succeeded
-        const updatedRoom = await db.select().from(room).where(eq(room.id, roomId)).limit(1);
-
-        if (updatedRoom.length > 0) {
-          let newPlayer2Score = updatedRoom[0].player2Score;
-
-          if (friendScoreChange !== 0) {
-            newPlayer2Score = Math.max(0, updatedRoom[0].player2Score + friendScoreChange);
-            await db.update(room)
-              .set({
-                player2Score: newPlayer2Score,
-                updatedAt: new Date(),
-              })
-              .where(eq(room.id, roomId));
-          }
-
-          // Friend's message will be retrieved via polling, no need for WebSocket broadcast
-        }
-      } catch (error) {
-        console.error("Error creating friend response:", error);
-      }
-    }, 1000);
+    // Note: This is a user-to-user chat system, no AI auto-replies
 
     // Return the response
     return NextResponse.json({
@@ -271,7 +191,7 @@ export async function POST(
         : null,
       score: {
         player1Score: newPlayer1Score,
-        player2Score: currentRoom.player2Score,
+        player2Score: newPlayer2Score,
       },
     });
   } catch (error) {

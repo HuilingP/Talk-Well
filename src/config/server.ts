@@ -12,6 +12,11 @@ const envSchema = z.object({
 
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
+
+  // LLM Configuration
+  OPENAI_API_KEY: z.string().optional(),
+  OPENAI_MODEL: z.string().default("gpt-4o-mini"),
+  OPENAI_BASE_URL: z.string().optional(),
 });
 
 export const env = envSchema.parse(process.env);

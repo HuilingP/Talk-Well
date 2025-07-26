@@ -52,9 +52,11 @@ const POLLING_INTERVAL = 3000; // 默认3秒轮询一次
 const FAST_POLLING_INTERVAL = 1000; // 快速轮询间隔（发送消息后）
 const SLOW_POLLING_INTERVAL = 5000; // 慢速轮询间隔（长时间无活动）
 const FAST_POLLING_DURATION = 10000; // 快速轮询持续时间
-const MAX_RETRY_ATTEMPTS = 5; // 增加重试次数
+const MAX_RETRY_ATTEMPTS = 10; // 增加重试次数
 const RETRY_DELAY = 1000; // 基础重试延迟
-const CONNECTION_TIMEOUT = 10000; // 连接超时时间
+const CONNECTION_TIMEOUT = 15000; // 增加连接超时时间
+const BACKOFF_MULTIPLIER = 1.5; // 指数退避倍数
+const MAX_BACKOFF_DELAY = 30000; // 最大退避延迟
 
 export default function RoomPage({
   params,
@@ -69,6 +71,10 @@ export default function RoomPage({
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string | null>(null);
+
+  // 房间信息
+  const [roomCreatedById, setRoomCreatedById] = useState<string | null>(null);
+  const [playerNames, setPlayerNames] = useState<{ player1?: string; player2?: string }>({});
 
   // 消息和分数状态
   const [messages, setMessages] = useState<Message[]>([]);
@@ -92,6 +98,36 @@ export default function RoomPage({
   const lastMessageIdRef = useRef<string | null>(null);
   const isPollingRef = useRef<boolean>(false);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 计算指数退避延迟
+  const calculateBackoffDelay = useCallback((attempt: number) => {
+    const delay = RETRY_DELAY * (BACKOFF_MULTIPLIER ** (attempt - 1));
+    return Math.min(delay, MAX_BACKOFF_DELAY);
+  }, []);
+
+  // 检查错误是否为临时错误（可重试）
+  const isRetriableError = useCallback((error: any) => {
+    if (error instanceof Error) {
+      // 网络错误
+      if (error.name === "TypeError" && error.message.includes("Failed to fetch")) {
+        return true;
+      }
+      // 超时错误
+      if (error.name === "AbortError" || error.message.includes("timeout")) {
+        return true;
+      }
+      // HTTP错误
+      if (error.message.includes("503") || error.message.includes("502") || error.message.includes("504")) {
+        return true;
+      }
+      // 连接重置
+      if (error.message.includes("Connection reset") || error.message.includes("ECONNRESET")) {
+        return true;
+      }
+    }
+    return false;
+  }, []);
 
   // 获取当前用户session
   const getCurrentUser = async () => {
@@ -123,10 +159,15 @@ export default function RoomPage({
       clearTimeout(fastPollingTimeoutRef.current);
       fastPollingTimeoutRef.current = null;
     }
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+      retryTimeoutRef.current = null;
+    }
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
     }
+    isPollingRef.current = false;
   }, []);
 
   // 轮询获取新消息
@@ -157,6 +198,7 @@ export default function RoomPage({
         signal: abortControllerRef.current.signal,
         headers: {
           "Cache-Control": "no-cache",
+          "Accept": "application/json",
         },
       });
 
@@ -192,6 +234,10 @@ export default function RoomPage({
         if (data.scores) {
           setPlayer1Score(data.scores.player1Score || 0);
           setPlayer2Score(data.scores.player2Score || 0);
+          // 更新房间创建者信息
+          if (data.scores.createdById) {
+            setRoomCreatedById(data.scores.createdById);
+          }
         }
 
         setIsConnected(true);
@@ -219,17 +265,37 @@ export default function RoomPage({
           errorMessage = "Network error";
         } else if (error.message.includes("timeout")) {
           errorMessage = "Request timeout";
+        } else if (error.message.includes("503")) {
+          errorMessage = "Service temporarily unavailable";
+        } else if (error.message.includes("502") || error.message.includes("504")) {
+          errorMessage = "Gateway error";
         } else {
           errorMessage = error.message;
         }
       }
 
       setPollingError(errorMessage);
-      setRetryCount(prev => prev + 1);
+      const newRetryCount = retryCount + 1;
+      setRetryCount(newRetryCount);
+
+      // 如果错误是可重试的且未达到最大重试次数，则安排重试
+      if (isRetriableError(error) && newRetryCount <= MAX_RETRY_ATTEMPTS) {
+        const backoffDelay = calculateBackoffDelay(newRetryCount);
+        console.warn(`Scheduling retry ${newRetryCount}/${MAX_RETRY_ATTEMPTS} after ${backoffDelay}ms`);
+        retryTimeoutRef.current = setTimeout(() => {
+          if (isAuthenticated && !isPollingRef.current) {
+            pollForNewMessages();
+          }
+        }, backoffDelay);
+      } else if (newRetryCount > MAX_RETRY_ATTEMPTS) {
+        console.warn(`Max retry attempts (${MAX_RETRY_ATTEMPTS}) exceeded. Stopping polling.`);
+        setPollingError(`Connection failed after ${MAX_RETRY_ATTEMPTS} attempts`);
+        stopPolling();
+      }
     } finally {
       isPollingRef.current = false;
     }
-  }, [id, isAuthenticated, stopPolling]);
+  }, [id, isAuthenticated, stopPolling, retryCount, isRetriableError, calculateBackoffDelay]);
 
   // 重启轮询（内部使用）
   const restartPolling = useCallback(() => {
@@ -261,18 +327,62 @@ export default function RoomPage({
     restartPolling();
   }, [restartPolling]);
 
+  // 重置连接状态
+  const resetConnectionState = useCallback(() => {
+    setRetryCount(0);
+    setPollingError(null);
+  }, []);
+
   // 启动轮询
   const startPolling = useCallback(() => {
     if (pollingIntervalRef.current) {
       clearInterval(pollingIntervalRef.current);
     }
 
+    // 重置重试计数
+    resetConnectionState();
+
     // 立即执行一次轮询
     pollForNewMessages();
 
     // 设置定期轮询
     pollingIntervalRef.current = setInterval(pollForNewMessages, currentPollingInterval);
-  }, [pollForNewMessages, currentPollingInterval]);
+  }, [pollForNewMessages, currentPollingInterval, resetConnectionState]);
+
+  // 连接健康检查
+  const checkConnectionHealth = useCallback(async () => {
+    if (!isAuthenticated) {
+      return true;
+    }
+
+    try {
+      const response = await fetch(`/api/room/${id}`, {
+        method: "HEAD", // 只检查服务是否可用
+        signal: AbortSignal.timeout(5000), // 5秒超时
+      });
+      return response.ok;
+    } catch (error) {
+      console.warn("Connection health check failed:", error);
+      return false;
+    }
+  }, [id, isAuthenticated]);
+
+  // 智能重连机制
+  const attemptReconnection = useCallback(async () => {
+    console.warn("Attempting to reconnect...");
+
+    const isHealthy = await checkConnectionHealth();
+    if (isHealthy) {
+      console.warn("Connection restored, restarting polling");
+      setIsConnected(true);
+      setPollingError(null);
+      setRetryCount(0);
+      startPolling();
+      return true;
+    }
+
+    return false;
+  }, [checkConnectionHealth, startPolling]);
 
   // 初始化房间数据
   const initializeRoomData = useCallback(async () => {
@@ -287,6 +397,29 @@ export default function RoomPage({
         setMessages(data.messages || []);
         setPlayer1Score(data.room.player1Score || 0);
         setPlayer2Score(data.room.player2Score || 0);
+        setRoomCreatedById(data.room.createdById);
+
+        // 收集房间中的玩家名字
+        const uniqueUsers = new Map<string, string>();
+        data.messages?.forEach((msg: any) => {
+          if (msg.userId && msg.username) {
+            uniqueUsers.set(msg.userId, msg.username);
+          }
+        });
+
+        // 设置玩家名字
+        const newPlayerNames: { player1?: string; player2?: string } = {};
+        if (data.room.createdById && uniqueUsers.has(data.room.createdById)) {
+          newPlayerNames.player1 = uniqueUsers.get(data.room.createdById);
+        }
+        // 找到第一个非创建者的用户作为player2
+        for (const [userId, username] of uniqueUsers.entries()) {
+          if (userId !== data.room.createdById) {
+            newPlayerNames.player2 = username;
+            break;
+          }
+        }
+        setPlayerNames(newPlayerNames);
 
         // 设置最后一条消息ID用于轮询
         if (data.messages && data.messages.length > 0) {
@@ -338,20 +471,22 @@ export default function RoomPage({
     return () => clearInterval(activityCheckInterval);
   }, [lastActivity, currentPollingInterval]);
 
-  // 重新连接逻辑
+  // 重新连接逻辑（由 pollForNewMessages 中的智能重试处理）
+  // 这里只处理认证状态变化后的重新连接
   useEffect(() => {
-    if (pollingError && retryCount < MAX_RETRY_ATTEMPTS && isAuthenticated) {
-      const retryDelay = Math.min(RETRY_DELAY * 2 ** retryCount, 30000); // 最大延迟30秒
-      const timeoutId = setTimeout(() => {
-        startPolling();
-      }, retryDelay);
+    if (retryCount >= MAX_RETRY_ATTEMPTS && !isConnected) {
+      console.warn("Max retries exceeded, attempting smart reconnection...");
+      // 尝试智能重连
+      const reconnectTimer = setTimeout(async () => {
+        const success = await attemptReconnection();
+        if (!success) {
+          setPollingError("Unable to reconnect. Please refresh the page.");
+        }
+      }, 5000); // 5秒后尝试重连
 
-      return () => clearTimeout(timeoutId);
-    } else if (retryCount >= MAX_RETRY_ATTEMPTS) {
-      const errorMsg = "Connection failed after multiple attempts";
-      setPollingError(errorMsg);
+      return () => clearTimeout(reconnectTimer);
     }
-  }, [pollingError, retryCount, isAuthenticated, startPolling]);
+  }, [retryCount, isConnected, attemptReconnection]);
 
   // 初始化组件
   useEffect(() => {
@@ -371,9 +506,19 @@ export default function RoomPage({
       stopPolling();
       if (fastPollingTimeoutRef.current) {
         clearTimeout(fastPollingTimeoutRef.current);
+        fastPollingTimeoutRef.current = null;
+      }
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+        retryTimeoutRef.current = null;
       }
     };
   }, [id, initializeRoomData, startPolling, stopPolling]);
+
+  // 设置连接状态的处理器
+  const handleConnectionStateChange = useCallback((connected: boolean) => {
+    setIsConnected(connected);
+  }, []);
 
   // 认证状态变化时的处理
   useEffect(() => {
@@ -381,10 +526,9 @@ export default function RoomPage({
       startPolling();
     } else if (!isAuthenticated) {
       stopPolling();
-      const connected = false;
-      setIsConnected(connected);
+      handleConnectionStateChange(false);
     }
-  }, [isAuthenticated, startPolling, stopPolling]);
+  }, [isAuthenticated, startPolling, stopPolling, handleConnectionStateChange]);
 
   // 保存到localStorage
   useEffect(() => {
@@ -444,7 +588,7 @@ export default function RoomPage({
 
       setLastActivity(Date.now());
 
-      // 触发快速轮询获取最新消息，包括刚发送的消息和AI回复
+      // 触发快速轮询获取最新消息，包括刚发送的消息
       triggerFastPolling();
 
       // 立即执行一次轮询
@@ -548,7 +692,14 @@ export default function RoomPage({
             </Button>
           </CardHeader>
 
-          <Scoreboard player1Score={player1Score} player2Score={player2Score} />
+          <Scoreboard
+            player1Score={player1Score}
+            player2Score={player2Score}
+            currentUserId={currentUserId}
+            roomCreatedById={roomCreatedById}
+            player1Name={playerNames.player1}
+            player2Name={playerNames.player2}
+          />
 
           <CardContent className="flex-grow space-y-4 h-96 overflow-y-auto p-6">
             {messages.map((msg, index) => (
@@ -620,20 +771,38 @@ export default function RoomPage({
             </div>
 
             {/* 连接状态指示器 */}
-            <div className="flex items-center gap-2 text-xs">
-              <div className={cn(
-                "w-2 h-2 rounded-full",
-                isConnected ? "bg-green-500" : "bg-red-500",
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2">
+                <div className={cn(
+                  "w-2 h-2 rounded-full",
+                  isConnected ? "bg-green-500" : "bg-red-500",
+                )}
+                />
+                <span className="opacity-60">
+                  {isConnected
+                    ? "Connected"
+                    : pollingError
+                      ? `Error: ${pollingError}`
+                      : "Connecting..."}
+                  {retryCount > 0 && ` (Retry ${retryCount}/${MAX_RETRY_ATTEMPTS})`}
+                </span>
+              </div>
+              {!isConnected && pollingError && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={async () => {
+                    resetConnectionState();
+                    const success = await attemptReconnection();
+                    if (!success) {
+                      startPolling(); // 强制重启轮询
+                    }
+                  }}
+                  className="h-6 px-2 text-xs"
+                >
+                  Retry
+                </Button>
               )}
-              />
-              <span className="opacity-60">
-                {isConnected
-                  ? "Connected"
-                  : pollingError
-                    ? `Error: ${pollingError}`
-                    : "Connecting..."}
-                {retryCount > 0 && ` (Retry ${retryCount}/${MAX_RETRY_ATTEMPTS})`}
-              </span>
             </div>
           </CardFooter>
         </Card>

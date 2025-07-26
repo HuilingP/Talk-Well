@@ -36,6 +36,7 @@ export async function GET(
       // Auto-create the room if it doesn't exist (user is authenticated)
       await db.insert(room).values({
         id,
+        createdById: session.user.id, // Set the current user as room creator
         player1Score: 0,
         player2Score: 0,
         createdAt: new Date(),
@@ -92,57 +93,19 @@ export async function GET(
         : undefined,
     }));
 
-    // If room is empty, add default messages like frontend does
-    if (messages.length === 0) {
-      const defaultMessages = [
-        { user: "Friend" as const, text: "Hey, how are you?" },
-        { user: "You" as const, text: "I'm good, thanks! How about you?" },
-        { user: "Friend" as const, text: "Doing great! Just enjoying the day." },
-      ];
-
-      // Insert default messages into database
-      for (const msg of defaultMessages) {
-        await db.insert(message).values({
-          id: `default_${Date.now()}_${Math.random()}`,
-          roomId: id,
-          userId: msg.user === "You" ? session?.user?.id || null : null,
-          username: msg.user === "You" ? session?.user?.name || "Anonymous" : "Friend",
-          userType: msg.user,
-          content: msg.text,
-        });
-      }
-
-      // Transform default messages to match format
-      const transformedDefaultMessages = defaultMessages.map((msg, index) => ({
-        id: `default_${Date.now()}_${index}`,
-        roomId: id,
-        userId: msg.user === "You" ? session?.user?.id || null : null,
-        username: msg.user === "You" ? session?.user?.name || "Anonymous" : "Friend",
-        content: msg.text,
-        userType: msg.user,
-        createdAt: new Date().toISOString(),
-      }));
-
-      return NextResponse.json({
-        room: {
-          id,
-          player1Score: roomData[0].player1Score,
-          player2Score: roomData[0].player2Score,
-          createdAt: roomData[0].createdAt.toISOString(),
-        },
-        messages: transformedDefaultMessages,
-      });
-    }
+    // Return empty messages for new rooms - users will start their own conversation
 
     return NextResponse.json({
       room: {
         id,
+        createdById: roomData[0].createdById,
         player1Score: roomData[0].player1Score,
         player2Score: roomData[0].player2Score,
         createdAt: roomData[0].createdAt.toISOString(),
         updatedAt: roomData[0].updatedAt.toISOString(),
       },
       messages,
+      currentUserId: session.user.id, // Add current user ID to response
     });
   } catch (error) {
     console.error("Error fetching room:", error);

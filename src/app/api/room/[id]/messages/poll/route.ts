@@ -100,12 +100,14 @@ export async function GET(
       ? {
           player1Score: currentRoom[0].player1Score,
           player2Score: currentRoom[0].player2Score,
+          createdById: currentRoom[0].createdById,
         }
       : null;
 
     return NextResponse.json({
       messages: transformedMessages,
       scores: roomScores,
+      currentUserId: session.user.id,
       timestamp: Date.now(),
     });
   } catch (error) {
