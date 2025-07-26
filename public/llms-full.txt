@@ -1,8 +1,8 @@
 # TODO: Replace all bracketed placeholders below with your actual project information.
 
-# [Full Introduction to Your Boot-Next.js Project Name]
+# [Full Introduction to Your 好好说话 Project Name]
 
-> [Provide a detailed introduction (100-150 words) covering the core value, target audience, and key features of your Boot-Next.js project.]
+> [Provide a detailed introduction (100-150 words) covering the core value, target audience, and key features of your 好好说话 project.]
 
 ## Project Background
 [Add details about the project's background, vision, and mission (200-300 words). Why was it created? What problems does it solve?]

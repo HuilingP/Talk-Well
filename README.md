@@ -1,4 +1,4 @@
-# Boot Next.js
+# 好好说话
 
 This is a [Next.js](https://nextjs.org/) project
 

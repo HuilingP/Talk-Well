@@ -1,8 +1,8 @@
 # TODO: Replace all bracketed placeholders below with your actual project information.
 
-# [Your Boot-Next.js Project Name]
+# [Your 好好说话 Project Name]
 
-> [Describe your Boot-Next.js project's core value and purpose in 1-2 sentences]
+> [Describe your 好好说话 project's core value and purpose in 1-2 sentences]
 
 ## Core Content
 - [[Category 1 Name]](/[category-1-path]): [Brief description of Category 1]

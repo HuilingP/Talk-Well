@@ -53,7 +53,7 @@ export function Footer({ className }: FooterProps) {
               className="inline-flex items-center gap-2 font-bold text-xl mb-6 group transition-all duration-200 hover:opacity-80"
             >
               <span className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
-                Boot Next.js
+                好好说话
               </span>
             </Link>
             <p className="text-muted-foreground leading-relaxed max-w-xs">
@@ -96,7 +96,7 @@ export function Footer({ className }: FooterProps) {
               {" "}
               {currentYear}
               {" "}
-              Boot Next.js.
+              好好说话.
               {" "}
               {t("allRightsReserved")}
             </p>
