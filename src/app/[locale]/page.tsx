@@ -3,6 +3,8 @@
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
+import { ChatHistory } from "~/components/chat-history";
+import { JoinRoomDialog } from "~/components/join-room-dialog";
 import { Footer } from "~/components/layout/footer";
 import { Header } from "~/components/layout/header";
 import { Button } from "~/components/ui/button";
@@ -13,8 +15,6 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { JoinRoomDialog } from "~/components/join-room-dialog";
-import { ChatHistory } from "~/components/chat-history";
 
 export default function HomePage() {
   const t = useTranslations("HomePage");

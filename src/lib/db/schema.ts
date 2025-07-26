@@ -68,3 +68,34 @@ export const subscription = pgTable("subscription", {
   trialStart: timestamp("trial_start"),
   trialEnd: timestamp("trial_end"),
 });
+
+export const room = pgTable("room", {
+  id: text("id").primaryKey(),
+  createdById: text("created_by_id").references(() => user.id, { onDelete: "cascade" }),
+  player1Score: integer("player1_score").default(0).notNull(),
+  player2Score: integer("player2_score").default(0).notNull(),
+  createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
+  updatedAt: timestamp("updated_at").$defaultFn(() => new Date()).notNull(),
+});
+
+export const message = pgTable("message", {
+  id: text("id").primaryKey(),
+  roomId: text("room_id").notNull().references(() => room.id, { onDelete: "cascade" }),
+  userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
+  userType: text("user_type").notNull(), // "You" or "Friend"
+  text: text("text").notNull(),
+  analysisId: text("analysis_id"),
+  createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
+});
+
+export const messageAnalysis = pgTable("message_analysis", {
+  id: text("id").primaryKey(),
+  messageId: text("message_id").notNull().references(() => message.id, { onDelete: "cascade" }),
+  isCrossNet: text("is_cross_net").notNull(),
+  senderState: text("sender_state").notNull(),
+  receiverImpact: text("receiver_impact").notNull(),
+  evidence: text("evidence").notNull(),
+  suggestion: text("suggestion").notNull(),
+  risk: text("risk").notNull(),
+  createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
+});

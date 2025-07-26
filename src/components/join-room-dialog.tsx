@@ -48,7 +48,7 @@ export function JoinRoomDialog() {
             <Input
               id="room-code"
               value={roomCode}
-              onChange={(e) => setRoomCode(e.target.value)}
+              onChange={e => setRoomCode(e.target.value)}
               className="col-span-3"
               maxLength={8}
               type="number"

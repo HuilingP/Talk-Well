@@ -1,10 +1,15 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { use, useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { use, useEffect, useRef, useState } from "react";
 
+import { Footer } from "~/components/layout/footer";
+import { Header } from "~/components/layout/header";
+import { MessageAnalysisDialog } from "~/components/message-analysis-dialog";
+import { Scoreboard } from "~/components/scoreboard";
+import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
@@ -13,12 +18,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
-import { Button } from "~/components/ui/button";
-import { Header } from "~/components/layout/header";
-import { Footer } from "~/components/layout/footer";
 import { cn } from "~/lib/utils/cn";
-import { Scoreboard } from "~/components/scoreboard";
-import { MessageAnalysisDialog } from "~/components/message-analysis-dialog";
 
 interface Message {
   user: "You" | "Friend";
@@ -61,7 +61,7 @@ export default function RoomPage({
       // If no active session, try to load from history
       const history = JSON.parse(localStorage.getItem("chat_history") || "[]");
       const historicalSession = history.find(
-        (s: ChatSession) => s.id === id
+        (s: ChatSession) => s.id === id,
       );
       if (historicalSession) {
         sessionData = historicalSession;
@@ -105,25 +105,27 @@ export default function RoomPage({
   }, [messages]);
 
   const handleSendMessage = () => {
-    if (newMessage.trim() === "") return;
+    if (newMessage.trim() === "") {
+      return;
+    }
 
     if (!hasInteracted) {
       setHasInteracted(true);
     }
 
     const userMessage: Message = { user: "You", text: newMessage };
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setNewMessage("");
 
-    setPlayer1Score((prev) => prev + (Math.random() > 0.3 ? 1 : -1));
+    setPlayer1Score(prev => prev + (Math.random() > 0.3 ? 1 : -1));
 
     setTimeout(() => {
       const friendMessage: Message = {
         user: "Friend",
         text: "That's cool! What are you up to?",
       };
-      setMessages((prev) => [...prev, friendMessage]);
-      setPlayer2Score((prev) => prev + (Math.random() > 0.3 ? 1 : -1));
+      setMessages(prev => [...prev, friendMessage]);
+      setPlayer2Score(prev => prev + (Math.random() > 0.3 ? 1 : -1));
     }, 1000);
   };
 
@@ -162,7 +164,11 @@ export default function RoomPage({
       <main className="flex-grow flex items-center justify-center p-4">
         <Card className="w-full max-w-2xl flex flex-col">
           <CardHeader className="relative">
-            <CardTitle className="text-center">{t("title")} {id}</CardTitle>
+            <CardTitle className="text-center">
+              {t("title")}
+              {" "}
+              {id}
+            </CardTitle>
             <Button
               variant="ghost"
               size="icon"
@@ -179,7 +185,7 @@ export default function RoomPage({
                 key={index}
                 className={cn(
                   "flex items-end gap-2",
-                  msg.user === "You" ? "justify-end" : "justify-start"
+                  msg.user === "You" ? "justify-end" : "justify-start",
                 )}
               >
                 <MessageAnalysisDialog>
@@ -188,7 +194,7 @@ export default function RoomPage({
                       "rounded-lg px-4 py-2 max-w-xs lg:max-w-md cursor-pointer",
                       msg.user === "You"
                         ? "bg-primary text-primary-foreground"
-                        : "bg-muted"
+                        : "bg-muted",
                     )}
                   >
                     <p>{msg.text}</p>
@@ -202,7 +208,7 @@ export default function RoomPage({
             <Input
               placeholder={t("messagePlaceholder")}
               value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
+              onChange={e => setNewMessage(e.target.value)}
               onKeyDown={handleKeyDown}
             />
             <Button onClick={handleSendMessage}>{t("sendButton")}</Button>

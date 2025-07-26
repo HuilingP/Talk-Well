@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
 
 interface ChatSession {
   id: string;
@@ -34,14 +33,16 @@ export function ChatHistory() {
       <CardContent className="space-y-4">
         {history
           .sort((a, b) => b.timestamp - a.timestamp)
-          .map((session) => (
+          .map(session => (
             <Link
               key={session.id}
               href={`/room/${session.id}`}
               className="block p-4 border rounded-lg hover:bg-muted"
             >
               <p>
-                {t("room")} {session.id}
+                {t("room")}
+                {" "}
+                {session.id}
               </p>
               <p className="text-sm text-muted-foreground">
                 {new Date(session.timestamp).toLocaleString()}

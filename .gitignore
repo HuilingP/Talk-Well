@@ -8,6 +8,17 @@ dist-ssr
 .env
 
 ######################
+# Clacky Environment
+######################
+.clackyai/
+
+######################
+# PNPM Package Manager
+######################
+.pnpm-store/
+.pnpm-debug.log*
+
+######################
 # Node
 ######################
 /node/

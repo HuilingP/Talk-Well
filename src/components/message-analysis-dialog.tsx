@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import {
   Dialog,
@@ -8,7 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { ReactNode } from "react";
 
 interface MessageAnalysisDialogProps {
   children: ReactNode;
@@ -43,23 +43,46 @@ export function MessageAnalysisDialog({ children }: MessageAnalysisDialogProps) 
             <h4 className="font-semibold">{t("detailedAnalysis.title")}</h4>
             <ul className="list-disc pl-5 space-y-2 mt-2">
               <li>
-                <strong>{t("detailedAnalysis.senderState")}:</strong> {mockAnalysis.senderState}
+                <strong>
+                  {t("detailedAnalysis.senderState")}
+                  :
+                </strong>
+                {" "}
+                {mockAnalysis.senderState}
               </li>
               <li>
-                <strong>{t("detailedAnalysis.receiverImpact")}:</strong> {mockAnalysis.receiverImpact}
+                <strong>
+                  {t("detailedAnalysis.receiverImpact")}
+                  :
+                </strong>
+                {" "}
+                {mockAnalysis.receiverImpact}
               </li>
               <li>
-                <strong>{t("detailedAnalysis.evidence")}:</strong> {mockAnalysis.evidence}
+                <strong>
+                  {t("detailedAnalysis.evidence")}
+                  :
+                </strong>
+                {" "}
+                {mockAnalysis.evidence}
               </li>
               <li>
-                <strong>{t("detailedAnalysis.suggestion")}:</strong> {mockAnalysis.suggestion}
+                <strong>
+                  {t("detailedAnalysis.suggestion")}
+                  :
+                </strong>
+                {" "}
+                {mockAnalysis.suggestion}
               </li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold">{t("riskAssessment.title")}</h4>
             <p>
-              <span className="font-bold">{mockAnalysis.risk}</span> - {t("riskAssessment.description")}
+              <span className="font-bold">{mockAnalysis.risk}</span>
+              {" "}
+              -
+              {t("riskAssessment.description")}
             </p>
           </div>
         </div>
