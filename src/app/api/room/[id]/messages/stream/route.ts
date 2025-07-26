@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { eq, gte } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { auth } from "~/lib/auth/server";
 import { db } from "~/lib/db";
@@ -89,7 +89,7 @@ export async function GET(
 
       // Send any missed messages if lastMessageId is provided
       if (lastMessageId) {
-        sendMissedMessages(roomId, Number.parseInt(lastMessageId), writer);
+        sendMissedMessages(roomId, lastMessageId, writer);
       }
 
       // Cleanup on stream close
@@ -110,15 +110,24 @@ export async function GET(
 }
 
 // Function to send missed messages
-async function sendMissedMessages(roomId: string, lastMessageId: number, writer: any) {
+async function sendMissedMessages(roomId: string, lastMessageId: string | null, writer: any) {
   try {
-    const missedMessages = await db
+    // Get all messages for the room and filter by timestamp/order since nanoid strings can't be compared directly
+    const query = db
       .select()
       .from(message)
-      .where(
-        eq(message.roomId, roomId) && gte(message.id, lastMessageId + 1),
-      )
+      .where(eq(message.roomId, roomId))
       .orderBy(message.createdAt);
+
+    const allMessages = await query;
+    // If we have a lastMessageId, filter to only return newer messages
+    let missedMessages = allMessages;
+    if (lastMessageId) {
+      const lastMessageIndex = allMessages.findIndex(msg => msg.id === lastMessageId);
+      if (lastMessageIndex >= 0) {
+        missedMessages = allMessages.slice(lastMessageIndex + 1);
+      }
+    }
 
     for (const msg of missedMessages) {
       writer.write(`data: ${JSON.stringify({

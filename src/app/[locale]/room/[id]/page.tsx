@@ -702,7 +702,7 @@ export default function RoomPage({
             roomCreatedById={roomCreatedById}
             player1Name={playerNames.player1}
             player2Name={playerNames.player2}
-            currentUsername={currentUsername}
+            currentUsername={currentUsername || undefined}
           />
 
           <CardContent className="flex-grow space-y-4 h-96 overflow-y-auto p-6">

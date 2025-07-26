@@ -13,7 +13,7 @@ const roomConnections = new Map<string, Set<{
 }>>();
 
 // 广播消息到房间
-export function broadcastToWebSocketRoom(roomId: string, data: any) {
+function _broadcastToWebSocketRoom(roomId: string, data: any) {
   const connections = roomConnections.get(roomId);
   if (!connections) {
     return;
@@ -176,8 +176,7 @@ async function sendRecentMessages(roomId: string, controller: ReadableStreamDefa
           content: msg.content,
           userType: msg.userType,
           createdAt: msg.createdAt,
-          analysis: msg.analysis,
-          scoreChange: msg.scoreChange,
+          analysisId: msg.analysisId,
         },
       })}\n\n`;
 
