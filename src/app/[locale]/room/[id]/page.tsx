@@ -642,9 +642,9 @@ export default function RoomPage({
   // 如果用户未认证，显示登录提示
   if (!isAuthenticated && authError) {
     return (
-      <div className="flex h-screen items-center justify-center bg-background">
+      <div className="flex flex-col h-screen items-center justify-center bg-background">
         <Header />
-        <main className="flex flex-1 items-center justify-center p-8">
+        <main className="flex items-center justify-center p-8">
           <Card className="w-full max-w-md">
             <CardHeader>
               <CardTitle className="text-center">{t("authRequired") || "Authentication Required"}</CardTitle>

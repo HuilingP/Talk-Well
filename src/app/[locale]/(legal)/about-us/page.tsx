@@ -61,7 +61,7 @@ export default function AboutUsPage() {
 
           <TypographyH1>About Us</TypographyH1>
           <TypographyLead>
-            We are a team of passionate developers dedicated to creating high-quality software.
+            At PsychologicalGame, we believe that understanding ourselves and others is the key to building stronger, more meaningful relationships.
           </TypographyLead>
           <TypographySmall className="text-muted-foreground">
             Last Updated:
@@ -73,7 +73,8 @@ export default function AboutUsPage() {
         {/* Introduction */}
         <section className="space-y-4">
           <TypographyP>
-            This is a boilerplate for Next.js projects. It includes a set of best practices and tools to help you get started with your next project.
+            Our journey began with a simple observation: traditional psychology can feel intimidating or overly academic for many people. We saw an opportunity to bridge this gap by transforming evidence-based psychological principles into interactive, enjoyable experiences that anyone can understand and benefit from.
+            Today, we're proud to serve a global community of individuals who are curious about human behavior, eager to improve their relationships, and committed to personal growth through psychological understanding.
           </TypographyP>
         </section>
 
@@ -87,9 +88,9 @@ export default function AboutUsPage() {
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                   <Sparkles className="h-5 w-5 text-primary" />
                 </div>
-                <TypographyH3 className="text-xl font-medium">Open Source</TypographyH3>
+                <TypographyH3 className="text-xl font-medium">Discover Yourself</TypographyH3>
                 <TypographyP className="mt-2 text-muted-foreground">
-                  Our boilerplate is open source and available on GitHub.
+                  Explore your personality traits, communication style, emotional patterns, and cognitive preferences through scientifically-backed assessments presented in an engaging, game-like format.
                 </TypographyP>
               </CardContent>
             </Card>
@@ -99,9 +100,9 @@ export default function AboutUsPage() {
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                   <Shield className="h-5 w-5 text-primary" />
                 </div>
-                <TypographyH3 className="text-xl font-medium">Best Practices</TypographyH3>
+                <TypographyH3 className="text-xl font-medium">Understand Others</TypographyH3>
                 <TypographyP className="mt-2 text-muted-foreground">
-                  We follow the best practices for Next.js development.
+                  Gain insights into different personality types, learning styles, and behavioral patterns to improve your relationships with family, friends, colleagues, and romantic partners.
                 </TypographyP>
               </CardContent>
             </Card>
@@ -111,9 +112,9 @@ export default function AboutUsPage() {
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                   <GraduationCap className="h-5 w-5 text-primary" />
                 </div>
-                <TypographyH3 className="text-xl font-medium">Easy to Use</TypographyH3>
+                <TypographyH3 className="text-xl font-medium">Learn Continuously</TypographyH3>
                 <TypographyP className="mt-2 text-muted-foreground">
-                  Our boilerplate is easy to use and customize.
+                  Access a growing library of psychological tools, each designed to address different aspects of human behavior and interpersonal dynamics.
                 </TypographyP>
               </CardContent>
             </Card>
@@ -125,38 +126,38 @@ export default function AboutUsPage() {
           <TypographyH2>About Our Platform</TypographyH2>
 
           <TypographyP>
-            Our platform is built on top of Next.js, a popular React framework for building server-rendered applications.
+            Our platform is built with user experience in mind – intuitive navigation, mobile-friendly design, and results that are both insightful and easy to understand, regardless of your background in psychology.
           </TypographyP>
 
           <TypographyH3 className="mt-4">Our Approach</TypographyH3>
           <TypographyP>
-            We believe in creating tools that are:
+            Peace Language Generator and the Misunderstanding Translator.
           </TypographyP>
           <ul className="list-disc pl-6 space-y-2">
             <li>
-              <strong>Simple and intuitive</strong>
+              <strong>Science-Based Foundation</strong>
               {" "}
-              - designed for both beginners and advanced users
+              - Every game and tool on our platform is grounded in established psychological research and theories. We work with licensed psychologists and researchers to ensure accuracy and validity in our assessments.
             </li>
             <li>
-              <strong>Fast and efficient</strong>
+              <strong>Practical Application</strong>
               {" "}
-              - optimized for performance
+              - Our tools don't just provide insights; they offer actionable strategies. Each result includes personalized recommendations for improving communication, resolving conflicts, and building stronger relationships.
             </li>
             <li>
-              <strong>Privacy-respecting</strong>
+              <strong>Inclusive Design</strong>
               {" "}
-              - all processing happens in your browser
+              - We create experiences that are accessible to people of all backgrounds, education levels, and cultural contexts. Our language is clear, our examples are diverse, and our tools are designed to celebrate human differences rather than categorize them rigidly.
             </li>
             <li>
-              <strong>Accessible</strong>
+              <strong>Continuous Improvement</strong>
               {" "}
-              - available to anyone with a web browser
+              - We actively listen to our community's feedback, regularly updating our tools and developing new ones based on user needs and emerging psychological research.
             </li>
             <li>
-              <strong>Valuable</strong>
+              <strong>Gamification for Engagement</strong>
               {" "}
-              - solving real problems for Markdown users
+              - We believe learning about psychology should be enjoyable, not overwhelming. By incorporating game elements – interactive questions, visual results, progress tracking, and shareable outcomes – we make psychological exploration feel natural and fun.
             </li>
           </ul>
         </section>
@@ -166,7 +167,7 @@ export default function AboutUsPage() {
           <TypographyH2>Our Revenue Model</TypographyH2>
 
           <TypographyP>
-            We are committed to keeping our boilerplate free and open source.
+            PsychologicalGame operates on a donation-based model because we believe that psychological insights should be accessible to everyone, regardless of their financial situation.
           </TypographyP>
 
           <div className="mt-4 space-y-2">
@@ -184,7 +185,7 @@ export default function AboutUsPage() {
           </div>
 
           <TypographyP className="mt-4">
-            We are committed to providing a high-quality boilerplate that is easy to use and customize.
+            Beyond financial support, we deeply value user feedback and suggestions.
           </TypographyP>
         </section>
 
@@ -196,8 +197,8 @@ export default function AboutUsPage() {
             <div className="flex-shrink-0">
               <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden border-4 border-primary/20">
                 <Image
-                  src="https://avatars.githubusercontent.com/u/17453452?v=4"
-                  alt="Kirk Lin"
+                  src="https://avatars.githubusercontent.com/u/114465654?s=400&u=a56371d278e914146eb1f0c95a0c918cf7629bac&v=4"
+                  alt="Huiling"
                   width={112}
                   height={112}
                   className="object-cover w-full h-full"
@@ -206,15 +207,15 @@ export default function AboutUsPage() {
             </div>
             <div className="flex-1 space-y-4 text-center md:text-left">
               <div>
-                <TypographyH3 className="text-xl font-medium">Kirk Lin</TypographyH3>
+                <TypographyH3 className="text-xl font-medium">Huiling</TypographyH3>
                 <p className="text-muted-foreground">Creator & Developer</p>
               </div>
               <TypographyP>
-                This boilerplate was created by a team of developers passionate about creating tools that simplify workflows and make technology more accessible.
+                On the way to being founder of something wonderful
               </TypographyP>
               <div className="pt-2">
                 <Button variant="outline" size="sm" asChild>
-                  <a href="https://github.com/kirklin" target="_blank" rel="noopener noreferrer" className="inline-flex items-center">
+                  <a href="https://github.com/huilingp" target="_blank" rel="noopener noreferrer" className="inline-flex items-center">
                     <Github className="mr-2 h-4 w-4" />
                     GitHub
                   </a>
@@ -233,10 +234,10 @@ export default function AboutUsPage() {
             {" "}
             {/* TODO: Replace with your own email */}
             <a
-              href="mailto:support@example.com"
+              href="mailto:alinpan257@gmail.com"
               className="text-primary hover:underline"
             >
-              support@example.com
+              alinpan257@gmail.com
             </a>
             .
           </TypographyP>
@@ -245,13 +246,13 @@ export default function AboutUsPage() {
             You can also find the project on GitHub:
             {" "}
             <a
-              href="https://github.com/kirklin"
+              href="https://github.com/huilingp"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline inline-flex items-center"
             >
               <Github className="mr-1 h-4 w-4" />
-              github.com/kirklin
+              github.com/huilingp
             </a>
           </TypographyP>
         </section>
@@ -259,7 +260,7 @@ export default function AboutUsPage() {
         {/* Acceptance */}
         <section className="py-4 border-t border-border">
           <TypographyP className="text-center text-muted-foreground">
-            By using this boilerplate, you acknowledge that you have read and understood our Terms of Use and Privacy Policy.
+            By using psychological game, you acknowledge that you have read and understood our Terms of Use and Privacy Policy.
           </TypographyP>
         </section>
       </Container>

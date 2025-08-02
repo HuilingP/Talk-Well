@@ -1,10 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-import { ChatHistory } from "~/components/chat-history";
-import { JoinRoomDialog } from "~/components/join-room-dialog";
 import { Footer } from "~/components/layout/footer";
 import { Header } from "~/components/layout/header";
 import { Button } from "~/components/ui/button";
@@ -17,14 +14,6 @@ import {
 } from "~/components/ui/card";
 
 export default function HomePage() {
-  const t = useTranslations("HomePage");
-  const router = useRouter();
-
-  const handleCreateRoom = () => {
-    const roomCode = Math.floor(10000000 + Math.random() * 90000000).toString();
-    router.push(`/room/${roomCode}`);
-  };
-
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -32,20 +21,20 @@ export default function HomePage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-bold tracking-tight">
-              {t("title")}
+              Welcome to Psychological Game
             </CardTitle>
             <CardDescription className="pt-2">
-              {t("description")}
+              Explore the world of psychological games.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 pt-4">
-            <Button size="lg" onClick={handleCreateRoom}>
-              {t("createRoom")}
-            </Button>
-            <JoinRoomDialog />
+            <Link href="/game/talkwell" passHref>
+              <Button size="lg" className="w-full">
+                好好说话 (TalkWell)
+              </Button>
+            </Link>
           </CardContent>
         </Card>
-        <ChatHistory />
       </main>
       <Footer />
     </div>
