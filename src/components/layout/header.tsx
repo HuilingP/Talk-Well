@@ -65,7 +65,7 @@ export function Header({ className }: HeaderProps) {
                 <div className="absolute inset-0 rounded-md bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 blur-sm -z-10" />
               </div>
               <span className="font-bold text-xl bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
-                好好说话
+                PsychologicalGame.com
               </span>
             </Link>
           </div>

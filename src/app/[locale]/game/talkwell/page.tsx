@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { ChatHistory } from "~/components/chat-history";
@@ -39,6 +40,11 @@ export default function TalkwellPage() {
             {t("createRoom")}
           </Button>
           <JoinRoomDialog />
+          <Link href="/" passHref>
+            <Button variant="outline" className="w-full">
+              Back to Home
+            </Button>
+          </Link>
         </CardContent>
       </Card>
       <ChatHistory />
