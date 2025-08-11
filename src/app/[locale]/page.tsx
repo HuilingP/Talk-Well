@@ -1,5 +1,13 @@
 "use client";
 
+import {
+  ArrowRight,
+  BookHeart,
+  Gamepad2,
+  Globe,
+  HeartHandshake,
+  Sparkles,
+} from "lucide-react";
 import Link from "next/link";
 
 import { Footer } from "~/components/layout/footer";
@@ -13,148 +21,132 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 
+const features = [
+  {
+    icon: <HeartHandshake className="h-10 w-10" />,
+    title: "Resolve Conflict & Rebuild Intimacy",
+    description:
+      'Our "Talk Well" app uses proven psychology to help you communicate more effectively, turning arguments into opportunities for deeper understanding.',
+  },
+  {
+    icon: <Sparkles className="h-10 w-10" />,
+    title: "Learn Gentle Expression",
+    description:
+      "Our bad word translator helps you convert negative emotions into constructive expressions, making every conversation a bridge to better understanding.",
+  },
+  {
+    icon: <Gamepad2 className="h-10 w-10" />,
+    title: "Gamified Psychology Learning",
+    description:
+      "Through interactive exercises, we make learning communication skills fun. Master empathy and emotional intelligence in an enjoyable atmosphere.",
+  },
+  {
+    icon: <Globe className="h-10 w-10" />,
+    title: "For Long-Distance Couples",
+    description:
+      "Our relationship games help you maintain deep connection even across thousands of miles, resolving misunderstandings caused by physical separation.",
+  },
+  {
+    icon: <BookHeart className="h-10 w-10" />,
+    title: "Deep Conversation Guide",
+    description:
+      "We've curated 122 relationship-boosting questions to guide couples into deeper conversations, enhancing mutual understanding and emotional bonds.",
+  },
+];
+
 export default function HomePage() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950">
       <Header />
-      <main className="flex-grow flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-            Welcome to PsychologicalGame.com
-          </h1>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Master the art of communication and deepen your connections through engaging games.
-          </p>
-        </div>
-
-        <div className="mt-10 w-full max-w-md">
-          <Card>
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold">好好说话 (TalkWell)</CardTitle>
-              <CardDescription className="pt-2">
-                The first step to better conversations.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+      <main className="flex-grow">
+        {/* Hero Section */}
+        <section className="w-full py-20 md:py-32 bg-white dark:bg-gray-900">
+          <div className="container mx-auto text-center px-4">
+            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter text-gray-900 dark:text-gray-50">
+              Master the Art of Communication
+            </h1>
+            <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-gray-600 dark:text-gray-300">
+              Transform your relationships with psychology-based games. Deepen
+              your connections and turn conflicts into growth opportunities.
+            </p>
+            <div className="mt-8 flex justify-center">
               <Link href="/game/talkwell" passHref>
-                <Button size="lg" className="w-full">
-                  Play Now
+                <Button size="lg" className="group">
+                  Start Your Journey
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </div>
+        </section>
 
-        <div className="mt-16 w-full max-w-4xl mx-auto text-left">
-          <h2 className="text-3xl font-bold text-center">Why Play Our Games?</h2>
-          <div className="mt-6 grid gap-8 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Resolve Conflict in Relationships</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>
-                  Tired of misunderstandings? Our games are designed to help you and your partner learn how to navigate disagreements and resolve
-                  {" "}
-                  <strong>conflict in relationships</strong>
-                  . Turn arguments into opportunities for growth.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Learn to Communicate Effectively</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>
-                  Effective communication is key. We help you
-                  {" "}
-                  <strong>communicate</strong>
-                  {" "}
-                  better by providing tools and scenarios that foster understanding and empathy. Perfect for any
-                  {" "}
-                  <strong>couple game</strong>
-                  {" "}
-                  night.
-                </p>
-              </CardContent>
+        {/* Features Section */}
+        <section className="w-full py-20 md:py-28">
+          <div className="container mx-auto px-4">
+            <div className="text-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-50">
+                Why Choose TalkWell?
+              </h2>
+              <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-600 dark:text-gray-300">
+                We combine psychological theory with practical techniques to
+                create a personalized growth plan for every couple.
+              </p>
+            </div>
+            <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {features.map((feature, index) => (
+                <Card
+                  key={index}
+                  className="transform transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl bg-white dark:bg-gray-900"
+                >
+                  <CardHeader className="flex flex-row items-center gap-4">
+                    <div className="p-3 rounded-full bg-primary/10 text-primary">
+                      {feature.icon}
+                    </div>
+                    <CardTitle className="text-xl font-bold">
+                      {feature.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {feature.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="w-full py-20 md:py-28 bg-white dark:bg-gray-900">
+          <div className="container mx-auto">
+            <Card className="bg-primary text-primary-foreground shadow-lg">
+              <div className="flex flex-col md:flex-row items-center justify-between p-8 md:p-12">
+                <div className="text-center md:text-left">
+                  <h2 className="text-3xl font-bold">
+                    Start Your Communication Growth Journey Today
+                  </h2>
+                  <p className="mt-2 text-lg text-primary-foreground/80">
+                    Experience our free communication assessment now to discover
+                    your relationship's strengths and opportunities.
+                  </p>
+                </div>
+                <div className="mt-6 md:mt-0 md:ml-6">
+                  <Link href="/game/talkwell" passHref>
+                    <Button
+                      size="lg"
+                      variant="secondary"
+                      className="group w-full"
+                    >
+                      Play Now for Free
+                      <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </Card>
           </div>
-        </div>
-
-        <div className="mt-16 w-full max-w-4xl mx-auto text-left">
-          <h2 className="text-3xl font-bold text-center">Mindgames, but the good kind.</h2>
-          <div className="mt-6 grid gap-8 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>The Psychology of Games</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>
-                  Explore the fascinating intersection of
-                  {" "}
-                  <strong>games and psychology</strong>
-                  . Understand the
-                  {" "}
-                  <strong>mindgames</strong>
-                  {" "}
-                  people play and learn how to respond constructively. It's a fun
-                  {" "}
-                  <strong>relationship game</strong>
-                  {" "}
-                  that builds trust.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Bad Word Translator</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>
-                  Ever said something you regret? Our unique
-                  {" "}
-                  <strong>bad word translator</strong>
-                  {" "}
-                  helps you rephrase hurtful words into constructive feedback. It's a tool to help you speak and be heard without causing pain.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        <div className="mt-16 w-full max-w-4xl mx-auto text-left">
-          <h2 className="text-3xl font-bold text-center">Perfect for Every Couple</h2>
-          <div className="mt-6 grid gap-8 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Long Distance Relationship Game</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>
-                  Bridge the distance with a game that keeps you connected. Our
-                  {" "}
-                  <strong>long distance relationship game</strong>
-                  {" "}
-                  is designed to create shared experiences and meaningful conversations, no matter how many miles apart you are.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Relationship-Boosting Questions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>
-                  Inspired by the famous
-                  {" "}
-                  <strong>122 Relationship-Boosting Questions for Couples</strong>
-                  , our game prompts you with questions that spark deep and meaningful conversations, helping you discover more about each other.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        </section>
       </main>
       <Footer />
     </div>
