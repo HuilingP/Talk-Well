@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "~/components/language-switcher";
 import { ModeToggle } from "~/components/theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -27,11 +26,6 @@ export function Header({ className }: HeaderProps) {
   const t = useTranslations("Header");
   const pathname = usePathname();
   const { data: session, isPending } = authClient.useSession();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const navItems = [
     { href: "/", label: t("home") },
@@ -73,7 +67,7 @@ export function Header({ className }: HeaderProps) {
           {/* Navigation Links - Desktop */}
           <nav className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => {
-              const isActive = mounted && (pathname === item.href || (item.href === "/" && pathname === "/"));
+              const isActive = pathname === item.href || (item.href === "/" && pathname === "/");
               return (
                 <Link
                   key={item.href}

@@ -171,6 +171,7 @@ export default function RoomPage({
       abortControllerRef.current = null;
     }
     isPollingRef.current = false;
+    setIsConnected(false);
   }, []);
 
   // 轮询获取新消息
@@ -518,20 +519,14 @@ export default function RoomPage({
     };
   }, [id, initializeRoomData, startPolling, stopPolling]);
 
-  // 设置连接状态的处理器
-  const handleConnectionStateChange = useCallback((connected: boolean) => {
-    setIsConnected(connected);
-  }, []);
-
   // 认证状态变化时的处理
   useEffect(() => {
     if (isAuthenticated && !pollingIntervalRef.current) {
       startPolling();
     } else if (!isAuthenticated) {
       stopPolling();
-      handleConnectionStateChange(false);
     }
-  }, [isAuthenticated, startPolling, stopPolling, handleConnectionStateChange]);
+  }, [isAuthenticated, startPolling, stopPolling]);
 
   // 保存到localStorage
   useEffect(() => {
@@ -547,13 +542,8 @@ export default function RoomPage({
     }
   }, [id, messages, player1Score, player2Score, hasInteracted]);
 
-  // 自动滚动到底部
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   // useEffect(() => {
-  //   scrollToBottom();
+  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   // }, [messages]);
 
   // 发送消息

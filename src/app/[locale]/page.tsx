@@ -16,7 +16,6 @@ import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
@@ -26,7 +25,7 @@ const features = [
     icon: <HeartHandshake className="h-10 w-10" />,
     title: "Resolve Conflict & Rebuild Intimacy",
     description:
-      'Our "Talk Well" app uses proven psychology to help you communicate more effectively, turning arguments into opportunities for deeper understanding.',
+      "Our \"Talk Well\" app uses proven psychology to help you communicate more effectively, turning arguments into opportunities for deeper understanding.",
   },
   {
     icon: <Sparkles className="h-10 w-10" />,
@@ -93,9 +92,9 @@ export default function HomePage() {
               </p>
             </div>
             <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {features.map((feature, index) => (
+              {features.map(feature => (
                 <Card
-                  key={index}
+                  key={feature.title}
                   className="transform transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl bg-white dark:bg-gray-900"
                 >
                   <CardHeader className="flex flex-row items-center gap-4">

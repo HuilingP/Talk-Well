@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
 interface ChatSession {
@@ -12,14 +12,13 @@ interface ChatSession {
 
 export function ChatHistory() {
   const t = useTranslations("ChatHistory");
-  const [history, setHistory] = useState<ChatSession[]>([]);
-
-  useEffect(() => {
-    const savedHistory = localStorage.getItem("chat_history");
-    if (savedHistory) {
-      setHistory(JSON.parse(savedHistory));
+  const [history] = useState<ChatSession[]>(() => {
+    if (typeof window === "undefined") {
+      return [];
     }
-  }, []);
+    const savedHistory = localStorage.getItem("chat_history");
+    return savedHistory ? JSON.parse(savedHistory) : [];
+  });
 
   if (history.length === 0) {
     return null;
