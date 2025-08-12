@@ -13,10 +13,12 @@
   "Header": {
     "home": "首页",
     "pricing": "价格",
+    "game": "游戏",
     "signIn": "登录",
     "signUp": "注册",
     "profile": "个人中心",
-    "signOut": "退出登录"
+    "signOut": "退出登录",
+    "coupleQuestions": "情侣问题"
   },
   "Profile": {
     "anonymousUser": "匿名用户",
@@ -123,5 +125,11 @@
       "suggestion": "调整为“当...时，我感到很沮丧。”",
       "risk": "高"
     }
+  },
+  "CoupleQuestionsPage": {
+    "title": "情侣问题",
+    "description": "选择你想要包含在卡片中的问题。",
+    "generateCard": "生成卡片",
+    "ourQuestions": "我们的问题"
   }
 }

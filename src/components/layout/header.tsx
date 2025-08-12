@@ -30,7 +30,9 @@ export function Header({ className }: HeaderProps) {
   const navItems = [
     { href: "/", label: t("home") },
     // { href: "/pricing", label: t("pricing") }, // Temporarily commented out
-    ...(session?.user ? [{ href: "/dashboard", label: "Dashboard" }] : []),
+    { href: "/game/talkwell", label: t("game") },
+    { href: "/couple-questions", label: t("coupleQuestions") },
+    // ...(session?.user ? [{ href: "/dashboard", label: "Dashboard" }] : []),
   ];
 
   return (
@@ -128,7 +130,7 @@ export function Header({ className }: HeaderProps) {
                           <Link href="/dashboard/profile">{t("profile")}</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link href="/dashboard">Dashboard</Link>
+                          {/* <Link href="/dashboard">Dashboard</Link> */}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={async () => {

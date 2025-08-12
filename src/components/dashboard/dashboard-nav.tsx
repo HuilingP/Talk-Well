@@ -3,6 +3,7 @@
 import {
   BarChart3,
   CreditCard,
+  Heart,
   LayoutDashboard,
   Mail,
   User,
@@ -13,26 +14,31 @@ import { Link, usePathname } from "~/lib/i18n/navigation";
 import { cn } from "~/lib/utils";
 
 const navItems = [
-  {
-    title: "Overview",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
+  // {
+  //   title: "Overview",
+  //   href: "/dashboard",
+  //   icon: LayoutDashboard,
+  // },
   {
     title: "Profile",
     href: "/dashboard/profile",
     icon: User,
   },
   {
+    title: "Couple Questions",
+    href: "/couple-questions",
+    icon: Heart,
+  },
+  {
     title: "Usage",
     href: "/dashboard/usage",
     icon: BarChart3,
   },
-  {
-    title: "Billing & Invoices",
-    href: "/dashboard/billing",
-    icon: CreditCard,
-  },
+  // {
+  //   title: "Billing & Invoices",
+  //   href: "/dashboard/billing",
+  //   icon: CreditCard,
+  // },
   {
     title: "Contact Us",
     href: "/dashboard/contact",

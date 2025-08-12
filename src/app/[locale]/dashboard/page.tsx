@@ -35,7 +35,7 @@ export default function DashboardPage() {
     try {
       await authClient.subscription.upgrade({
         plan: plan.name,
-        successUrl: `${window.location.origin}/dashboard/billing`,
+        successUrl: `${window.location.origin}/dashboard`,
         cancelUrl: window.location.href,
         ...(subscription && { subscriptionId: subscription.id }),
       });

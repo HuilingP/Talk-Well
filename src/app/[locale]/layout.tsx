@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import Script from "next/script";
 import React from "react";
 import Analytics from "~/components/Analytics";
+import { Header } from "~/components/layout/header";
 import { ThemeProvider } from "~/components/theme-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { routing } from "~/lib/i18n/navigation";
@@ -71,6 +72,7 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <NextIntlClientProvider locale={locale} messages={messages}>
+            <Header />
             {children}
           </NextIntlClientProvider>
         </ThemeProvider>

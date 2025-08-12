@@ -11,7 +11,6 @@ import {
 import Link from "next/link";
 
 import { Footer } from "~/components/layout/footer";
-import { Header } from "~/components/layout/header";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -56,7 +55,6 @@ const features = [
 export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950">
-      <Header />
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="w-full py-20 md:py-32 bg-white dark:bg-gray-900">

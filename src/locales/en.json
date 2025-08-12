@@ -13,10 +13,12 @@
   "Header": {
     "home": "Home",
     "pricing": "Pricing",
+    "game": "Game",
     "signIn": "Sign In",
     "signUp": "Sign Up",
     "profile": "Profile",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "coupleQuestions": "Couple Questions"
   },
   "Profile": {
     "anonymousUser": "Anonymous User",
@@ -123,5 +125,11 @@
       "suggestion": "Rephrase as 'I feel frustrated when...'",
       "risk": "High"
     }
+  },
+  "CoupleQuestionsPage": {
+    "title": "Couple Questions",
+    "description": "Select the questions you want to include in your card.",
+    "generateCard": "Generate Card",
+    "ourQuestions": "Our Questions"
   }
 }
