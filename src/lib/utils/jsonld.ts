@@ -136,7 +136,7 @@ export function createOrganizationJsonLd(baseUrl: string = getBaseUrl()) {
       "@type": "ContactPoint",
       "contactType": "customer support",
       // TODO: Replace with your own email
-      "email": "support@example.com",
+      "email": "alinpan289@gmail.com",
     },
     "founder": {
       "@type": "Person",

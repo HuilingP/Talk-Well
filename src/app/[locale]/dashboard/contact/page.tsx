@@ -30,7 +30,7 @@ export default function ContactPage() {
             </p>
 
             <div className="mt-6 rounded-md bg-muted p-4">
-              <p className="text-sm font-medium">support@example.com</p>
+              <p className="text-sm font-medium">alinpan289@gmail.com</p>
             </div>
           </div>
         </Card>

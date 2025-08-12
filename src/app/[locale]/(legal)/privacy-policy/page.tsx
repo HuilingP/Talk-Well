@@ -321,10 +321,10 @@ export default function PrivacyPolicyPage() {
             {" "}
             {/* TODO: Replace with your own email */}
             <a
-              href="mailto:support@example.com"
+              href="mailto:alinpan289@gmail.com"
               className="text-primary hover:underline"
             >
-              support@example.com
+              alinpan289@gmail.com
             </a>
             .
           </TypographyP>

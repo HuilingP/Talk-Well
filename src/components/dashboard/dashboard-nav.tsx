@@ -51,18 +51,7 @@ export function DashboardNav() {
     <div className="flex w-64 flex-col border-r bg-background">
       {/* Logo section */}
       <div className="flex h-16 items-center border-b px-4">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="relative">
-            <Image
-              src="/favicon.ico"
-              alt="Logo"
-              width={24}
-              height={24}
-              className="rounded-md transition-transform duration-200"
-            />
-          </div>
-          <span className="font-medium">好好说话</span>
-        </Link>
+        {/* Logo removed as per request */}
       </div>
 
       {/* Nav links */}

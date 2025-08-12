@@ -6,7 +6,8 @@ import { notFound } from "next/navigation";
 import Script from "next/script";
 import React from "react";
 import Analytics from "~/components/Analytics";
-import { Header } from "~/components/layout/header";
+import { ConditionalHeader } from "~/components/layout/conditional-header";
+import MouseEffects from "~/components/mouse-effects";
 import { ThemeProvider } from "~/components/theme-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { routing } from "~/lib/i18n/navigation";
@@ -55,7 +56,6 @@ export default async function RootLayout({
   setRequestLocale(locale);
 
   const messages = await getMessages();
-
   return (
     // suppressHydrationWarning用于防止主题切换时服务端和客户端渲染不匹配导致的水合错误
     <html lang={locale} suppressHydrationWarning>
@@ -75,12 +75,13 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <NextIntlClientProvider locale={locale} messages={messages}>
-            <Header />
+            <ConditionalHeader />
             {children}
           </NextIntlClientProvider>
         </ThemeProvider>
         <Analytics />
         <Toaster />
+        <MouseEffects />
       </body>
     </html>
   );
