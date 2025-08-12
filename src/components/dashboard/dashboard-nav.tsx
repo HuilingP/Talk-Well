@@ -6,7 +6,6 @@ import {
   Mail,
   User,
 } from "lucide-react";
-import Image from "next/image";
 import { Link, usePathname } from "~/lib/i18n/navigation";
 
 import { cn } from "~/lib/utils";

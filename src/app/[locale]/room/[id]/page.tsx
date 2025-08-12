@@ -171,7 +171,6 @@ export default function RoomPage({
       abortControllerRef.current = null;
     }
     isPollingRef.current = false;
-    setIsConnected(false);
   }, []);
 
   // 轮询获取新消息
@@ -508,6 +507,7 @@ export default function RoomPage({
     // 清理函数
     return () => {
       stopPolling();
+      setIsConnected(false);
       if (fastPollingTimeoutRef.current) {
         clearTimeout(fastPollingTimeoutRef.current);
         fastPollingTimeoutRef.current = null;

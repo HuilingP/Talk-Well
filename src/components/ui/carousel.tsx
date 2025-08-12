@@ -60,14 +60,6 @@ function Carousel({
   const [canScrollPrev, setCanScrollPrev] = React.useState(false);
   const [canScrollNext, setCanScrollNext] = React.useState(false);
 
-  const onSelect = React.useCallback((api: CarouselApi) => {
-    if (!api) {
-      return;
-    }
-    setCanScrollPrev(api.canScrollPrev());
-    setCanScrollNext(api.canScrollNext());
-  }, []);
-
   const scrollPrev = React.useCallback(() => {
     api?.scrollPrev();
   }, [api]);
@@ -100,6 +92,17 @@ function Carousel({
     if (!api) {
       return;
     }
+
+    const onSelect = (api: CarouselApi) => {
+      if (!api) {
+        return;
+      }
+      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
+      setCanScrollPrev(api.canScrollPrev());
+      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
+      setCanScrollNext(api.canScrollNext());
+    };
+
     onSelect(api);
     api.on("reInit", onSelect);
     api.on("select", onSelect);
@@ -107,7 +110,7 @@ function Carousel({
     return () => {
       api?.off("select", onSelect);
     };
-  }, [api, onSelect]);
+  }, [api]);
 
   const contextValue = React.useMemo(
     () => ({

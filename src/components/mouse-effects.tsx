@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 const STAR_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="text-yellow-400">
@@ -8,15 +8,41 @@ const STAR_SVG = `
 </svg>
 `;
 
-const MouseEffects = () => {
+function MouseEffects() {
   useEffect(() => {
     const pointer = { x: 0.5 * window.innerWidth, y: 0.5 * window.innerHeight };
     const lastPointer = { ...pointer };
     let lastTimestamp = performance.now();
 
-    const halo = document.createElement('div');
-    halo.className = 'pointer-events-none fixed inset-0 z-50 transition-opacity duration-300';
+    const halo = document.createElement("div");
+    halo.className = "pointer-events-none fixed inset-0 z-50 transition-opacity duration-300";
     document.body.appendChild(halo);
+
+    const createStar = (x: number, y: number, speed: number) => {
+      const star = document.createElement("div");
+      star.innerHTML = STAR_SVG;
+      star.className = "fixed z-50 pointer-events-none";
+      const size = 10 + Math.min(speed * 2, 15);
+      star.style.width = `${size}px`;
+      star.style.height = `${size}px`;
+      star.style.left = `${x - size / 2}px`;
+      star.style.top = `${y - size / 2}px`;
+
+      const animation = star.animate(
+        [
+          { transform: "translate(0, 0) rotate(0deg) scale(1)", opacity: 1 },
+          { transform: `translate(${Math.random() * 60 - 30}px, ${Math.random() * 60 - 30}px) rotate(${Math.random() * 360}deg) scale(0)`, opacity: 0 },
+        ],
+        {
+          duration: 2000,
+          easing: "ease-out",
+          fill: "forwards",
+        },
+      );
+
+      animation.onfinish = () => star.remove();
+      document.body.appendChild(star);
+    };
 
     const updateHalo = () => {
       const now = performance.now();
@@ -40,32 +66,6 @@ const MouseEffects = () => {
       lastPointer.y = pointer.y;
     };
 
-    const createStar = (x: number, y: number, speed: number) => {
-      const star = document.createElement('div');
-      star.innerHTML = STAR_SVG;
-      star.className = 'fixed z-50 pointer-events-none';
-      const size = 10 + Math.min(speed * 2, 15);
-      star.style.width = `${size}px`;
-      star.style.height = `${size}px`;
-      star.style.left = `${x - size / 2}px`;
-      star.style.top = `${y - size / 2}px`;
-      
-      const animation = star.animate(
-        [
-          { transform: `translate(0, 0) rotate(0deg) scale(1)`, opacity: 1 },
-          { transform: `translate(${Math.random() * 60 - 30}px, ${Math.random() * 60 - 30}px) rotate(${Math.random() * 360}deg) scale(0)`, opacity: 0 }
-        ],
-        {
-          duration: 2000,
-          easing: 'ease-out',
-          fill: 'forwards'
-        }
-      );
-      
-      animation.onfinish = () => star.remove();
-      document.body.appendChild(star);
-    };
-
     const onMouseMove = (e: MouseEvent) => {
       pointer.x = e.clientX;
       pointer.y = e.clientY;
@@ -76,17 +76,17 @@ const MouseEffects = () => {
       requestAnimationFrame(loop);
     };
 
-    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener("mousemove", onMouseMove);
     const animationFrameId = requestAnimationFrame(loop);
 
     return () => {
-      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener("mousemove", onMouseMove);
       cancelAnimationFrame(animationFrameId);
       document.body.removeChild(halo);
     };
   }, []);
 
   return null;
-};
+}
 
 export default MouseEffects;
