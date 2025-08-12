@@ -2,9 +2,7 @@
 
 import {
   BarChart3,
-  CreditCard,
   Heart,
-  LayoutDashboard,
   Mail,
   User,
 } from "lucide-react";

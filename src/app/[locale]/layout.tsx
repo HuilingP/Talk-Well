@@ -30,6 +30,9 @@ export async function generateMetadata({
     title: "好好说话",
     metadataBase: new URL(getBaseUrl()),
     alternates: createAlternates("/", locale),
+    icons: {
+      icon: "/icon.svg",
+    },
   };
 }
 

@@ -51,7 +51,7 @@ export function Header({ className }: HeaderProps) {
             >
               <div className="relative">
                 <Image
-                  src="/favicon.ico"
+                  src="/logo.svg"
                   alt="Logo"
                   width={28}
                   height={28}
