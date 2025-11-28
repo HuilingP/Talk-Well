@@ -116,7 +116,8 @@ export default function HomePage() {
 
         {/* CTA Section */}
         <section className="w-full py-20 md:py-28 bg-white dark:bg-gray-900">
-          <div className="container mx-auto">
+          <div className="container mx-auto space-y-6">
+            {/* Primary CTA */}
             <Card className="bg-primary text-primary-foreground shadow-lg">
               <div className="flex flex-col md:flex-row items-center justify-between p-8 md:p-12">
                 <div className="text-center md:text-left">
@@ -136,6 +137,31 @@ export default function HomePage() {
                       className="group w-full"
                     >
                       Play Now for Free
+                      <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </Card>
+
+            {/* Mirror Agent CTA */}
+            <Card className="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 border border-slate-700 shadow-lg">
+              <div className="flex flex-col md:flex-row items-center justify-between p-8 md:p-12">
+                <div className="text-center md:text-left">
+                  <h2 className="text-3xl font-bold">
+                    Meet Your Mirror Self
+                  </h2>
+                  <p className="mt-2 text-lg text-slate-300">
+                    Have a deep, personalized conversation with your mirror agent created through an immersive interview experience.
+                  </p>
+                </div>
+                <div className="mt-6 md:mt-0 md:ml-6">
+                  <Link href="/interview" passHref>
+                    <Button
+                      size="lg"
+                      className="group w-full bg-gradient-to-r from-cyan-500 to-primary hover:from-cyan-500/90 hover:to-primary/90"
+                    >
+                      Start Interview
                       <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </Link>
